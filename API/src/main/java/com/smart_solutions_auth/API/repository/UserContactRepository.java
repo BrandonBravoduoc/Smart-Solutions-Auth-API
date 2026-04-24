@@ -6,6 +6,8 @@ import com.smart_solutions_auth.API.model.UserContact;
 
 public interface UserContactRepository extends JpaRepository<UserContact, Long> {
 
+    boolean existsByPhoneNumber(String phoneNumber);
+
     
     
 }
