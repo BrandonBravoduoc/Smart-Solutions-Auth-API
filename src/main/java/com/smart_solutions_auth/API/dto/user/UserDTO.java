@@ -42,12 +42,12 @@ public class UserDTO {
     //-------------------------------------------------------------------------------------------------------
 
 
-    public record changerPasswordRequest(
+    public record ChangePasswordRequest(
 
         @NotBlank(message = "La contraseña actual es obligatoria.")
         String currentPassword,
 
-        @NotBlank(message = "La nueva contraseña es obligatoria,")
+        @NotBlank(message = "La nueva contraseña es obligatoria.")
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", 
                  message = "La nueva contraseña debe tener al menos 8 caracteres, una mayúscula y un número.")
         String newPassword,
@@ -56,7 +56,7 @@ public class UserDTO {
         String confirmNewPassword
     ){}
 
-    public record changePasswordResponse(
+    public record ChangePasswordResponse(
         String email
     ){}
 
@@ -64,7 +64,7 @@ public class UserDTO {
     //-------------------------------------------------------------------------------------------------------
 
 
-    public record updateEmailRequest(
+    public record UpdateEmailRequest(
         @NotBlank(message = "El email es obligatorio.")
         @Email(message = "Formato de correo inválido.")
         String newEmail,
@@ -76,7 +76,7 @@ public class UserDTO {
         String password 
     ){}
 
-    public record udpateEmailResponse(
+    public record UpdateEmailResponse(
         String email,
         String message
     ){}

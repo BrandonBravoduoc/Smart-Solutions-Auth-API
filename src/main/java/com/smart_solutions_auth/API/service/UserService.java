@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.smart_solutions_auth.API.dto.user.UserDTO;
 import com.smart_solutions_auth.API.model.User;
 import com.smart_solutions_auth.API.model.UserContact;
+import com.smart_solutions_auth.API.model.UserRole;
 import com.smart_solutions_auth.API.util.Validations;
 
 import jakarta.servlet.http.Cookie;
@@ -44,9 +45,13 @@ public class UserService {
         validations.passwordValidate(dto.password(), dto.confirmPassword());
         validations.contactValidate(dto.phone());
         
+        UserRole role =  validations.roleVerification("CLIENTE");
+
         User user = new User();
         user.setEmail(cleanEmail);
         user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setUserRole(role);
+        user.setAsset(true);
 
         User userSaved = userRepository.save(user);
 
@@ -54,7 +59,6 @@ public class UserService {
         userContact.setName(dto.name());
         userContact.setLastName(dto.lastName());
         userContact.setPhoneNumber(dto.phone());
-        
         userContact.setUser(userSaved);
 
         userContactRepository.save(userContact);
@@ -67,7 +71,7 @@ public class UserService {
         );
     }
 
-    public UserDTO.changePasswordResponse changePassword(UserDTO.changerPasswordRequest dto){
+    public UserDTO.ChangePasswordResponse changePassword(UserDTO.ChangePasswordRequest dto){
        
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -83,10 +87,10 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.newPassword()));
         userRepository.save(user);
 
-        return new UserDTO.changePasswordResponse("Contraseña actualizada exitosamente.");
+        return new UserDTO.ChangePasswordResponse("Contraseña actualizada exitosamente.");
     }
 
-    public UserDTO.udpateEmailResponse updateEmail(UserDTO.updateEmailRequest dto, HttpServletResponse response){
+    public UserDTO.UpdateEmailResponse updateEmail(UserDTO.UpdateEmailRequest dto, HttpServletResponse response){
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -114,7 +118,7 @@ public class UserService {
         cookie.setMaxAge(24 * 60 * 60);
         response.addCookie(cookie);
 
-        return new UserDTO.udpateEmailResponse(
+        return new UserDTO.UpdateEmailResponse(
             user.getEmail(),
             "Correo electrónico actualizado exitosamente."
         );
