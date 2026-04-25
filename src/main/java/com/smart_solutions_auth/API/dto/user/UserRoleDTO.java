@@ -1,4 +1,4 @@
-package com.smart_solutions_auth.dto.user;
+package com.smart_solutions_auth.API.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
