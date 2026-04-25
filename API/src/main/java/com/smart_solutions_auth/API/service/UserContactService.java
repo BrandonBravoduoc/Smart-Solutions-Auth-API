@@ -21,7 +21,7 @@ public class UserContactService {
     @Autowired 
     private Validations validations;
     
-    public UserContactDTO.Response upateUserContact(UserContactDTO.UpdateRequest dto) {
+    public UserContactDTO.Response updateUserContact(UserContactDTO.UpdateRequest dto) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
