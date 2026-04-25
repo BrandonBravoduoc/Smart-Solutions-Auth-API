@@ -24,6 +24,7 @@ public class AuthService {
     private JwtService jwtService;
 
     public AuthDTO.Response Login(AuthDTO.LoginRequest dto, HttpServletResponse response) {
+        
         User user = validations.validateCredentials(dto.email(), dto.password());
         
         String token = jwtService.generateToken(user);
@@ -41,6 +42,9 @@ public class AuthService {
             user.getUserRole().getNameRole()
         );
     }
+
+    
+
 
 
 }
