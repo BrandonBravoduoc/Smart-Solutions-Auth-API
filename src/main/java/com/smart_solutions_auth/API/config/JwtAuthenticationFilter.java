@@ -28,6 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/swagger-ui/") || 
+            path.startsWith("/v3/api-docs") || 
+            path.startsWith("/swagger-resources") ||
+            path.startsWith("/webjars/");
+    }
+
+
+    @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException{
             String token = null;
@@ -38,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .findFirst()
                     .map(Cookie::getValue)
                     .orElse(null);
+
             }
 
             if(token != null && SecurityContextHolder.getContext().getAuthentication() == null){

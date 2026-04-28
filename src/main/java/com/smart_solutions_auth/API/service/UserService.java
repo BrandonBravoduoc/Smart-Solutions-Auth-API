@@ -42,6 +42,7 @@ public class UserService {
     public UserDTO.Response userRegister(UserDTO.RegisterRequest dto){
         
         String cleanEmail = validations.emailValidate(dto.email());
+
         validations.passwordValidate(dto.password(), dto.confirmPassword());
         validations.contactValidate(dto.phone());
         
@@ -126,16 +127,26 @@ public class UserService {
     }
 
     public void logout(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("accessToken", "")
+
+    ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
             .httpOnly(true)
-            .secure(false)
+            .secure(false) 
             .path("/")
             .maxAge(0)
             .sameSite("Strict")
             .build();
 
-        response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
-    }
+    ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(false)
+            .path("/api/auth/refresh") 
+            .maxAge(0)
+            .sameSite("Strict")
+            .build();
+
+    response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, accessCookie.toString());
+    response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
+}
 
     public boolean desactivateAccount(String password, HttpServletResponse response) {
 
@@ -161,4 +172,8 @@ public class UserService {
         return true;
 
     }
+
+    
+
+
 }

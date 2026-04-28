@@ -6,6 +6,6 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class UserAddressService {
+public class AddressService {
     
 }
