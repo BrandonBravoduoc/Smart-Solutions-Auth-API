@@ -31,40 +31,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
         return path.startsWith("/swagger-ui/") || 
-            path.startsWith("/v3/api-docs") || 
-            path.startsWith("/swagger-resources") ||
-            path.startsWith("/webjars/");
+               path.startsWith("/v3/api-docs") || 
+               path.startsWith("/swagger-resources") ||
+               path.startsWith("/webjars/");
     }
 
-
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException{
-            String token = null;
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
+        
+        String token = null;
 
-            if(request.getCookies()!= null){
-                token = Arrays.stream(request.getCookies())
+        if (request.getCookies() != null) {
+            token = Arrays.stream(request.getCookies())
                     .filter(cookie -> "accessToken".equals(cookie.getName()))
                     .findFirst()
                     .map(Cookie::getValue)
                     .orElse(null);
+        }
 
-            }
+        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (jwtService.isTokenValid(token)) {
+                String username = jwtService.extractUsername(token);
+                Long userId = jwtService.extractClaim(token, claims -> claims.get("userId", Long.class));
 
-            if(token != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                if(jwtService.isTokenValid(token)){
-                    String username = jwtService.extractUsername(token);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
+                
+                authToken.setDetails(userId); 
                         
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+        }
 
         filterChain.doFilter(request, response);
-
     }
-
 }
