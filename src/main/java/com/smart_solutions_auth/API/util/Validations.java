@@ -1,6 +1,7 @@
 package com.smart_solutions_auth.API.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -64,5 +65,16 @@ public class Validations {
         return userRoleRepository.findByNameRole(nameRole)
             .orElseThrow(() -> new RuntimeException("El rol " + nameRole + " no está registrado en el sistema"));
     }
+
+    public Long getCurrentUserId() {
+    Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
+    
+    if (details instanceof Long) {
+        return (Long) details;
+    }
+    
+    throw new RuntimeException("No se pudo obtener el usuario desde el contexto de seguridad.");
+}
+
 
 }

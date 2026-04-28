@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.smart_solutions_auth.API.dto.auth.AuthDTO;
 import com.smart_solutions_auth.API.dto.user.UserDTO;
 import com.smart_solutions_auth.API.service.AuthService;
-import com.smart_solutions_auth.API.service.UserService;
+import com.smart_solutions_auth.API.service.user.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 

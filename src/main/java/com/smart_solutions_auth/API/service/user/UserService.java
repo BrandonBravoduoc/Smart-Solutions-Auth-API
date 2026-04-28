@@ -1,22 +1,21 @@
-package com.smart_solutions_auth.API.service;
+package com.smart_solutions_auth.API.service.user;
 
 import com.smart_solutions_auth.API.repository.UserContactRepository;
 import com.smart_solutions_auth.API.repository.UserRepository;
 import com.smart_solutions_auth.API.service.jwt.JwtService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.smart_solutions_auth.API.dto.user.UserDTO;
 import com.smart_solutions_auth.API.model.User;
 import com.smart_solutions_auth.API.model.UserContact;
 import com.smart_solutions_auth.API.model.UserRole;
 import com.smart_solutions_auth.API.util.Validations;
 
-import jakarta.servlet.http.Cookie;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
@@ -28,10 +27,10 @@ public class UserService {
     private UserContactRepository userContactRepository;
 
     @Autowired
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
     
     @Autowired
-    private  PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private Validations validations;
@@ -39,14 +38,13 @@ public class UserService {
     @Autowired
     private JwtService jwtService;
 
-    public UserDTO.Response userRegister(UserDTO.RegisterRequest dto){
-        
-        String cleanEmail = validations.emailValidate(dto.email());
 
+    public UserDTO.Response userRegister(UserDTO.RegisterRequest dto){
+        String cleanEmail = validations.emailValidate(dto.email());
         validations.passwordValidate(dto.password(), dto.confirmPassword());
         validations.contactValidate(dto.phone());
         
-        UserRole role =  validations.roleVerification("CLIENTE");
+        UserRole role = validations.roleVerification("CLIENTE");
 
         User user = new User();
         user.setEmail(cleanEmail);
@@ -73,10 +71,10 @@ public class UserService {
     }
 
     public UserDTO.ChangePasswordResponse changePassword(UserDTO.ChangePasswordRequest dto){
-       
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByEmail(email)
+        Long userId = validations.getCurrentUserId();
+
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
         
         validations.passwordValidate(dto.newPassword(), dto.confirmNewPassword());
@@ -93,9 +91,9 @@ public class UserService {
 
     public UserDTO.UpdateEmailResponse updateEmail(UserDTO.UpdateEmailRequest dto, HttpServletResponse response){
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = validations.getCurrentUserId();
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
         if(!passwordEncoder.matches(dto.password(), user.getPassword())){
@@ -112,47 +110,45 @@ public class UserService {
 
         String newToken = jwtService.generateToken(user);
 
-        Cookie cookie = new Cookie("accessToken", newToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("accessToken", newToken)
+                .httpOnly(true)
+                .secure(false) 
+                .path("/")
+                .maxAge(3600)
+                .sameSite("Strict")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return new UserDTO.UpdateEmailResponse(
             user.getEmail(),
             "Correo electrónico actualizado exitosamente."
         );
-
     }
 
     public void logout(HttpServletResponse response) {
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
 
-    ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
-            .httpOnly(true)
-            .secure(false) 
-            .path("/")
-            .maxAge(0)
-            .sameSite("Strict")
-            .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false).path("/api/v1/auth/refresh")
+                .maxAge(0).sameSite("Strict")
+                .build();
 
-    ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
-            .httpOnly(true)
-            .secure(false)
-            .path("/api/auth/refresh") 
-            .maxAge(0)
-            .sameSite("Strict")
-            .build();
-
-    response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, accessCookie.toString());
-    response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
-}
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+    }
 
     public boolean desactivateAccount(String password, HttpServletResponse response) {
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = validations.getCurrentUserId();
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
         if(!passwordEncoder.matches(password, user.getPassword())){
@@ -161,19 +157,7 @@ public class UserService {
 
         user.setAsset(false);
         userRepository.save(user);
-
-        Cookie cookie = new Cookie("accessToken","");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-        
+        logout(response); 
         return true;
-
     }
-
-    
-
-
 }

@@ -3,7 +3,8 @@ package com.smart_solutions_auth.API.controller.user;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smart_solutions_auth.API.dto.user.UserRoleDTO;
-import com.smart_solutions_auth.API.service.UserRoleService; // Asumiendo que el método está aquí
+import com.smart_solutions_auth.API.service.user.UserRoleService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/api/v1/roles")
 @RequiredArgsConstructor
 public class UserRoleController {
 
