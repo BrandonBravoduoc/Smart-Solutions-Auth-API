@@ -79,7 +79,7 @@ public class UserService {
             .secure(false)
             .path("/api/v1/auth/refresh")
             .maxAge(604800)
-            .sameSite(refreshToken)
+            .sameSite("Strict")
             .build();
 
         
