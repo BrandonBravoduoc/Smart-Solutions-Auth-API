@@ -42,6 +42,7 @@ public class UserService {
     public UserDTO.Response userRegister(UserDTO.RegisterRequest dto){
         
         String cleanEmail = validations.emailValidate(dto.email());
+
         validations.passwordValidate(dto.password(), dto.confirmPassword());
         validations.contactValidate(dto.phone());
         
@@ -171,4 +172,8 @@ public class UserService {
         return true;
 
     }
+
+    
+
+
 }

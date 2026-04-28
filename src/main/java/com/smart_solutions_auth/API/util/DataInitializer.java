@@ -25,14 +25,12 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // 1. Crear Roles si no existen
+        
         UserRole adminRole = createRoleIfNotFound("ADMINISTRADOR");
         createRoleIfNotFound("CLIENTE");
 
-        // 2. Crear Usuario Administrador inicial si no existe ningún usuario
         if (userRepository.findByEmail("admin@smart.com").isEmpty()) {
             
-            // Crear entidad Usuario
             User adminUser = new User();
             adminUser.setEmail("admin@smart.com");
             adminUser.setPassword(passwordEncoder.encode("admin1234")); // Cambiar en producción
@@ -41,7 +39,6 @@ public class DataInitializer implements CommandLineRunner {
             
             User savedAdmin = userRepository.save(adminUser);
 
-            // Crear datos de contacto ficticios
             UserContact adminContact = new UserContact();
             adminContact.setName("Admin");
             adminContact.setLastName("Sistema");
