@@ -12,7 +12,11 @@ import java.util.Date;
 public class JwtService {
 
     private String secretKey = "tu_clave_secreta_super_segura_y_larga_123456";
+
     private long expiration = 3600000; 
+
+    private long refreshExpiration = 604800000;
+
     public String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getEmail())
@@ -44,4 +48,14 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
+    public String generateRefreshToken(User user){
+        return Jwts.builder()
+            .subject(user.getEmail())
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
+            .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+            .compact();
+    }
+
 }

@@ -38,7 +38,7 @@ public class UserContact {
     private User user;
 
     @OneToOne
-    @JoinColumn(name = "user_address_id", nullable = false)
-    private UserAddress userAddress;
+    @JoinColumn(name = "user_address_id", nullable = true)
+    private Address userAddress;
 
 }

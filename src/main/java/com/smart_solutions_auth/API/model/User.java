@@ -47,7 +47,7 @@ public class User implements UserDetails {
     private UserRole userRole;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @ToString.Exclude // Evita errores de recursividad con Lombok
+    @ToString.Exclude 
     private UserContact userContact;
 
     @Override
