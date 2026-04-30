@@ -17,7 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -44,9 +44,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO.Response> register(@RequestBody @Valid UserDTO.RegisterRequest dto) {
-        UserDTO.Response response = userService.userRegister(dto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<UserDTO.Response> register(@RequestBody @Valid UserDTO.RegisterRequest dto, HttpServletResponse response) {
+        UserDTO.Response userResponse = userService.userRegister(dto, response);
+        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 
 
