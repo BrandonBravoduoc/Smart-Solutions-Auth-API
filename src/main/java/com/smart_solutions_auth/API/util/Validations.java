@@ -67,14 +67,11 @@ public class Validations {
     }
 
     public Long getCurrentUserId() {
-    Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
-    
-    if (details instanceof Long) {
+        Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
+        if (details == null) {
+            throw new RuntimeException("Sesión no válida");
+        }
         return (Long) details;
     }
-    
-    throw new RuntimeException("No se pudo obtener el usuario desde el contexto de seguridad.");
-}
-
 
 }

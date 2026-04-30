@@ -3,11 +3,13 @@ package com.smart_solutions_auth.API.service.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.API.model.User;
 import java.util.Date;
 import java.util.function.Function;
+
 import javax.crypto.SecretKey;
 
 @Service
@@ -66,7 +68,7 @@ public class JwtService {
             .subject(user.getEmail())
             .issuedAt(new Date())
             .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
-            .claim("userId", user.getId()) 
+            .claim("userId", user.getId()) // También incluimos el ID aquí por si acaso
             .signWith(getSigningKey())
             .compact();
     }
