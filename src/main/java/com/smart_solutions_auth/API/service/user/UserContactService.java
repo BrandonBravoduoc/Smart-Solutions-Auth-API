@@ -1,14 +1,11 @@
-package com.smart_solutions_auth.API.service;
+package com.smart_solutions_auth.API.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import com.smart_solutions_auth.API.dto.user.UserContactDTO;
 import com.smart_solutions_auth.API.model.UserContact;
 import com.smart_solutions_auth.API.repository.UserContactRepository;
 import com.smart_solutions_auth.API.util.Validations;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -23,9 +20,9 @@ public class UserContactService {
     
     public UserContactDTO.Response updateUserContact(UserContactDTO.UpdateRequest dto) {
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = validations.getCurrentUserId();
 
-        UserContact contact = userContactRepository.findByUserEmail(email)
+        UserContact contact = userContactRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
 
         if(!contact.getPhoneNumber().equals(dto.phone())){
@@ -45,6 +42,4 @@ public class UserContactService {
             contact.getPhoneNumber()
         );
     }
-
-    
 }

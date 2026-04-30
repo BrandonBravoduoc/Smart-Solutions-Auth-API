@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.smart_solutions_auth.API.dto.auth.AuthDTO;
 import com.smart_solutions_auth.API.dto.user.UserDTO;
 import com.smart_solutions_auth.API.service.AuthService;
-import com.smart_solutions_auth.API.service.UserService;
+import com.smart_solutions_auth.API.service.user.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -44,9 +44,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO.Response> register(@RequestBody @Valid UserDTO.RegisterRequest dto, HttpServletResponse response) {
-        UserDTO.Response userResponse = userService.userRegister(dto, response);
-        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+    public ResponseEntity<UserDTO.Response> register(@RequestBody @Valid UserDTO.RegisterRequest dto) {
+        UserDTO.Response response = userService.userRegister(dto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 

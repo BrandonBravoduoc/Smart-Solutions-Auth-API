@@ -1,4 +1,4 @@
-package com.smart_solutions_auth.API.service;
+package com.smart_solutions_auth.API.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

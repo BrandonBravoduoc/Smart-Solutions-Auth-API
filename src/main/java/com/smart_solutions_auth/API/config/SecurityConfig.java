@@ -29,8 +29,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll() 
-                .requestMatchers("/api/v1/roles/**").hasAnyRole("ADMINISTRADOR", "ADMIN") 
+                .requestMatchers("/api/v1/auth/**").permitAll() // Cambiado para coincidir con tus controllers
+                .requestMatchers("/api/v1/roles/**").hasAnyRole("ADMINISTRADOR", "ADMIN") // Protegemos creación de roles
                 .requestMatchers(
                     "/v3/api-docs/**",
                     "/v3/api-docs.yaml",
