@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.smart_solutions_auth.API.dto.address.CommuneDTO;
 import com.smart_solutions_auth.API.model.Commune;
@@ -30,28 +31,33 @@ public class CommuneController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<CommuneDTO.Response> getAll() {
         return communeService.findAll();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CommuneDTO.Response getById(@PathVariable Long id) {
         return communeService.findById(id);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<CommuneDTO.Response> create(@RequestBody @Valid CommuneDTO.CreateRequest dto) {
         CommuneDTO.Response created = communeService.create(dto);
         return ResponseEntity.created(URI.create("/api/communes/" + created.id())).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CommuneDTO.Response update(@PathVariable Long id, @RequestBody @Valid CommuneDTO.CreateRequest dto) {
         CommuneDTO.UpdateRequest ur = new CommuneDTO.UpdateRequest(id, dto.communeName(), dto.regionId());
         return communeService.update(ur);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         communeService.delete(id);
         return ResponseEntity.noContent().build();

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.smart_solutions_auth.API.dto.address.RegionDTO;
 import com.smart_solutions_auth.API.model.Region;
@@ -29,32 +30,37 @@ public class RegionController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<RegionDTO.Response> getAll() {
         return regionService.findAll();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public RegionDTO.Response getById(@PathVariable Long id) {
         return regionService.findById(id);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<RegionDTO.Response> create(@RequestBody RegionDTO.CreateRequest dto) {
         RegionDTO.Response created = regionService.create(dto);
         return ResponseEntity.created(URI.create("/api/regions/" + created.id())).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public RegionDTO.Response update(@PathVariable Long id, @RequestBody RegionDTO.CreateRequest dto) {
         RegionDTO.UpdateRequest ur = new RegionDTO.UpdateRequest(id, dto.regionName());
         return regionService.update(ur);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         regionService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    // no local mapping required; service returns DTOs
+   
 }

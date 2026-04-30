@@ -38,7 +38,8 @@ public class CommuneDTO {
 	public record Response(
 		@JsonProperty("id") Long id,
 		@JsonProperty("communeName") String communeName,
-		@JsonProperty("regionId") Long regionId
+		@JsonProperty("regionId") Long regionId,
+		@JsonProperty("regionName") String regionName
 	){}
 
 }

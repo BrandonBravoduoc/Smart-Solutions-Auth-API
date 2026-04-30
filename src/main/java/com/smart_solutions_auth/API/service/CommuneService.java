@@ -27,13 +27,23 @@ public class CommuneService {
 
 	public List<CommuneDTO.Response> findAll() {
 		return communeRepository.findAll().stream()
-			.map(c -> new CommuneDTO.Response(c.getId(), c.getCommuneName(), c.getRegion() != null ? c.getRegion().getId() : null))
+			.map(c -> new CommuneDTO.Response(
+				c.getId(),
+				c.getCommuneName(),
+				c.getRegion() != null ? c.getRegion().getId() : null,
+				c.getRegion() != null ? c.getRegion().getRegionName() : null
+			))
 			.collect(Collectors.toList());
 	}
 
 	public CommuneDTO.Response findById(Long id) {
 		Commune c = communeRepository.findById(id).orElseThrow(() -> new RuntimeException("Commune not found"));
-		return new CommuneDTO.Response(c.getId(), c.getCommuneName(), c.getRegion() != null ? c.getRegion().getId() : null);
+		return new CommuneDTO.Response(
+			c.getId(),
+			c.getCommuneName(),
+			c.getRegion() != null ? c.getRegion().getId() : null,
+			c.getRegion() != null ? c.getRegion().getRegionName() : null
+		);
 	}
 
 	public CommuneDTO.Response create(CommuneDTO.CreateRequest dto) {
@@ -42,7 +52,12 @@ public class CommuneService {
 		commune.setCommuneName(dto.communeName());
 		commune.setRegion(region);
 		Commune saved = communeRepository.save(commune);
-		return new CommuneDTO.Response(saved.getId(), saved.getCommuneName(), saved.getRegion() != null ? saved.getRegion().getId() : null);
+		return new CommuneDTO.Response(
+			saved.getId(),
+			saved.getCommuneName(),
+			saved.getRegion() != null ? saved.getRegion().getId() : null,
+			saved.getRegion() != null ? saved.getRegion().getRegionName() : null
+		);
 	}
 
 	public CommuneDTO.Response update(CommuneDTO.UpdateRequest dto) {
@@ -51,7 +66,12 @@ public class CommuneService {
 		commune.setCommuneName(dto.communeName());
 		commune.setRegion(region);
 		Commune saved = communeRepository.save(commune);
-		return new CommuneDTO.Response(saved.getId(), saved.getCommuneName(), saved.getRegion() != null ? saved.getRegion().getId() : null);
+		return new CommuneDTO.Response(
+			saved.getId(),
+			saved.getCommuneName(),
+			saved.getRegion() != null ? saved.getRegion().getId() : null,
+			saved.getRegion() != null ? saved.getRegion().getRegionName() : null
+		);
 	}
 
 	public void delete(Long id) {
