@@ -3,7 +3,7 @@ package com.smart_solutions_auth.API.controller.user;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smart_solutions_auth.API.dto.user.UserRoleDTO;
-import com.smart_solutions_auth.API.service.UserRoleService; // Asumiendo que el método está aquí
+import com.smart_solutions_auth.API.service.UserRoleService; 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
