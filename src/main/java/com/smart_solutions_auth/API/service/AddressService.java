@@ -21,6 +21,7 @@ public class AddressService {
 	private final CommuneRepository communeRepository;
 
 	public AddressService(AddressRepository addressRepository, CommuneRepository communeRepository) {
+
 		this.addressRepository = addressRepository;
 		this.communeRepository = communeRepository;
 	}
@@ -34,31 +35,37 @@ public class AddressService {
 	}
 
 	public AddressDTO.Response findById(Long id) {
-		Address a = addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Address not found"));
+		Address a = addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
+		
 		return new AddressDTO.Response(a.getStreet(), a.getNumber(), a.getCommune() != null ? a.getCommune().getId() : null);
 	}
 
 	public AddressDTO.Response create(AddressDTO.CreateRequest dto) {
-		Commune commune = communeRepository.findById(dto.communeId()).orElseThrow(() -> new RuntimeException("Commune not found"));
+		Commune commune = communeRepository.findById(dto.communeId()).orElseThrow(() -> new RuntimeException("Comuna no encontrada"));
 		Address a = new Address();
+		
 		a.setStreet(dto.street());
 		a.setNumber(dto.number());
 		a.setCommune(commune);
 		Address saved = addressRepository.save(a);
+		
 		return new AddressDTO.Response(saved.getStreet(), saved.getNumber(), saved.getCommune() != null ? saved.getCommune().getId() : null);
 	}
 
 	public AddressDTO.Response update(AddressDTO.UpdateRequest dto) {
-		Address a = addressRepository.findById(dto.id()).orElseThrow(() -> new RuntimeException("Address not found"));
-		Commune commune = communeRepository.findById(dto.communeId()).orElseThrow(() -> new RuntimeException("Commune not found"));
+		Address a = addressRepository.findById(dto.id()).orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
+		Commune commune = communeRepository.findById(dto.communeId()).orElseThrow(() -> new RuntimeException("Comuna no encontrada"));
+		
 		a.setStreet(dto.street());
 		a.setNumber(dto.number());
 		a.setCommune(commune);
 		Address saved = addressRepository.save(a);
+		
 		return new AddressDTO.Response(saved.getStreet(), saved.getNumber(), saved.getCommune() != null ? saved.getCommune().getId() : null);
 	}
 
 	public void delete(Long id) {
+
 		addressRepository.deleteById(id);
 	}
 }

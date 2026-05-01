@@ -29,6 +29,7 @@ public class RegionService {
 
 	public RegionDTO.Response findById(Long id) {
 		Region r = regionRepository.findById(id).orElseThrow(() -> new RuntimeException("Region not found"));
+		
 		return new RegionDTO.Response(r.getId(), r.getRegionName());
 	}
 
@@ -36,6 +37,7 @@ public class RegionService {
 		Region region = new Region();
 		region.setRegionName(dto.regionName());
 		Region saved = regionRepository.save(region);
+		
 		return new RegionDTO.Response(saved.getId(), saved.getRegionName());
 	}
 
@@ -43,6 +45,7 @@ public class RegionService {
 		Region region = regionRepository.findById(dto.id()).orElseThrow(() -> new RuntimeException("Region not found"));
 		region.setRegionName(dto.regionName());
 		Region saved = regionRepository.save(region);
+		
 		return new RegionDTO.Response(saved.getId(), saved.getRegionName());
 	}
 

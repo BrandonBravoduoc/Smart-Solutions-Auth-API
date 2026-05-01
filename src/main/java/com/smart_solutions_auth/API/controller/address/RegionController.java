@@ -30,21 +30,26 @@ public class RegionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<RegionDTO.Response> getAll() {
+
         return regionService.findAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public RegionDTO.Response getById(@PathVariable Long id) {
+
         return regionService.findById(id);
     }
 
+    //dejo los preauthorize ya que se podrian duplicar muy facilmente los datos, 
+    //y no es necesario que un usuario normal pueda crear o modificar regiones o comunas.
+    
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<RegionDTO.Response> create(@RequestBody RegionDTO.CreateRequest dto) {
+
         RegionDTO.Response created = regionService.create(dto);
+
         return ResponseEntity.created(URI.create("/api/regions/" + created.id())).body(created);
     }
 
