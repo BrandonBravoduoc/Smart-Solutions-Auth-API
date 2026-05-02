@@ -24,7 +24,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException accessDeniedException) throws IOException {
         
         response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());

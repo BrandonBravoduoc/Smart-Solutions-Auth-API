@@ -32,6 +32,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeExceptions(RuntimeException ex) {
+        if (ex instanceof org.springframework.security.access.AccessDeniedException) {
+            throw ex; 
+        }
+
         Map<String, Object> errorDetails = new HashMap<>();
         
         errorDetails.put("timestamp", LocalDateTime.now());

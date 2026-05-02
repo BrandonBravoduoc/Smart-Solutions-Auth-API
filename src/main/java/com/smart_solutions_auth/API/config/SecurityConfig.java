@@ -34,6 +34,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll() 
+                .requestMatchers("/api/v1/auth/logout").permitAll()
                 .requestMatchers(
                     "/v3/api-docs/**",
                     "/v3/api-docs.yaml",
