@@ -4,6 +4,8 @@ import com.smart_solutions_auth.API.repository.UserContactRepository;
 import com.smart_solutions_auth.API.repository.UserRepository;
 import com.smart_solutions_auth.API.service.jwt.JwtService;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -277,6 +279,20 @@ public class UserService {
                 contact.getLastName(),
                 contact.getPhoneNumber()
         );
+    }
+
+    public List<UserDTO.Response> listUsers() {
+        return userRepository.findAll().stream()
+            .map(user -> {
+                UserContact contact = user.getUserContact(); 
+                return new UserDTO.Response(
+                    user.getEmail(),
+                    contact != null ? contact.getName() : "Nombre no encontrado.",
+                    contact != null ? contact.getLastName() : "Apellido no encontrado.",
+                    contact != null ? contact.getPhoneNumber() : "Telefóno no encontrado."
+                );
+            })
+            .toList();
     }
 
 }

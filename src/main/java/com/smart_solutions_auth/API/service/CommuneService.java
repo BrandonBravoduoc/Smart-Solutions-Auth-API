@@ -37,7 +37,8 @@ public class CommuneService {
 	}
 
 	public CommuneDTO.Response findById(Long id) {
-		Commune c = communeRepository.findById(id).orElseThrow(() -> new RuntimeException("Comuna no encontrada"));
+		Commune c = communeRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("Comuna no encontrada."));
 		
 		return new CommuneDTO.Response(
 			c.getId(),
@@ -48,7 +49,8 @@ public class CommuneService {
 	}
 
 	public CommuneDTO.Response create(CommuneDTO.CreateRequest dto) {
-		Region region = regionRepository.findById(dto.regionId()).orElseThrow(() -> new RuntimeException("Región no encontrada"));
+		Region region = regionRepository.findById(dto.regionId())
+			.orElseThrow(() -> new RuntimeException("Región no encontrada."));
 		Commune commune = new Commune();
 		
 		commune.setCommuneName(dto.communeName());
@@ -64,8 +66,11 @@ public class CommuneService {
 	}
 
 	public CommuneDTO.Response update(CommuneDTO.UpdateRequest dto) {
-		Commune commune = communeRepository.findById(dto.id()).orElseThrow(() -> new RuntimeException("Comuna no encontrada"));
-		Region region = regionRepository.findById(dto.regionId()).orElseThrow(() -> new RuntimeException("Región no encontrada	"));
+		Commune commune = communeRepository.findById(dto.id())
+			.orElseThrow(() -> new RuntimeException("Comuna no encontrada."));
+
+		Region region = regionRepository.findById(dto.regionId())
+			.orElseThrow(() -> new RuntimeException("Región no encontrada."));
 		
 		commune.setCommuneName(dto.communeName());
 		commune.setRegion(region);

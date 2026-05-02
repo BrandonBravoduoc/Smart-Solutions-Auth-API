@@ -23,14 +23,20 @@ public class RegionService {
 
 	public List<RegionDTO.Response> findAll() {
 		return regionRepository.findAll().stream()
-			.map(r -> new RegionDTO.Response(r.getId(), r.getRegionName()))
+			.map(r -> new RegionDTO.Response(
+				r.getId(), 
+				r.getRegionName()))
+			
 			.collect(Collectors.toList());
 	}
 
 	public RegionDTO.Response findById(Long id) {
-		Region r = regionRepository.findById(id).orElseThrow(() -> new RuntimeException("Region not found"));
+		Region r = regionRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("Region no encontrada."));
 		
-		return new RegionDTO.Response(r.getId(), r.getRegionName());
+		return new RegionDTO.Response(
+			r.getId(), 
+			r.getRegionName());
 	}
 
 	public RegionDTO.Response create(RegionDTO.CreateRequest dto) {
@@ -38,11 +44,14 @@ public class RegionService {
 		region.setRegionName(dto.regionName());
 		Region saved = regionRepository.save(region);
 		
-		return new RegionDTO.Response(saved.getId(), saved.getRegionName());
+		return new RegionDTO.Response(
+			saved.getId(), 
+			saved.getRegionName());
 	}
 
 	public RegionDTO.Response update(RegionDTO.UpdateRequest dto) {
-		Region region = regionRepository.findById(dto.id()).orElseThrow(() -> new RuntimeException("Region not found"));
+		Region region = regionRepository.findById(dto.id())
+			.orElseThrow(() -> new RuntimeException("Region no encontrada."));
 		region.setRegionName(dto.regionName());
 		Region saved = regionRepository.save(region);
 		

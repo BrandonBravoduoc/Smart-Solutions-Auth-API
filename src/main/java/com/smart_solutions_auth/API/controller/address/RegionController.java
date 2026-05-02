@@ -2,7 +2,6 @@ package com.smart_solutions_auth.API.controller.address;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.smart_solutions_auth.API.dto.address.RegionDTO;
-import com.smart_solutions_auth.API.model.Region;
 import com.smart_solutions_auth.API.service.RegionService;
 
 @RestController

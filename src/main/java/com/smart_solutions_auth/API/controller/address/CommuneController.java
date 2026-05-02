@@ -2,14 +2,13 @@ package com.smart_solutions_auth.API.controller.address;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +16,6 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.smart_solutions_auth.API.dto.address.CommuneDTO;
-import com.smart_solutions_auth.API.model.Commune;
 import com.smart_solutions_auth.API.service.CommuneService;
 
 @RestController
@@ -51,7 +49,7 @@ public class CommuneController {
         return ResponseEntity.created(URI.create("/api/communes/" + created.id())).body(created);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CommuneDTO.Response update(@PathVariable Long id, @RequestBody @Valid CommuneDTO.CreateRequest dto) {
 

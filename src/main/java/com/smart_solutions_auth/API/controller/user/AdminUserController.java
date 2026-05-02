@@ -1,5 +1,7 @@
 package com.smart_solutions_auth.API.controller.user;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,5 +49,12 @@ public class AdminUserController {
             @PathVariable String phone,
             @Valid @RequestBody UserDTO.UpdateUserByAdmin dto) {
         return ResponseEntity.ok(userService.updateByPhone(phone, dto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDTO.Response>> listAllUsers() {
+        List<UserDTO.Response> users = userService.listUsers();
+     
+        return ResponseEntity.ok(users);
     }
 }
