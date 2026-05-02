@@ -4,6 +4,8 @@ import com.smart_solutions_auth.API.repository.UserContactRepository;
 import com.smart_solutions_auth.API.repository.UserRepository;
 import com.smart_solutions_auth.API.service.jwt.JwtService;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -160,7 +162,7 @@ public class UserService {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
-   public boolean desactivateAccount(String password, HttpServletResponse response) {
+    public boolean desactivateAccount(String password, HttpServletResponse response) {
         Long userId = validations.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
@@ -185,7 +187,112 @@ public class UserService {
         return true;
     }
 
-    
+    public UserDTO.Response profile(){
 
+        Long userId = validations.getCurrentUserId();
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+
+        UserContact userContact = userContactRepository.findByUserId(userId)
+            .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
+
+        return new UserDTO.Response(
+            user.getEmail(),
+            userContact.getName(),
+            userContact.getLastName(),
+            userContact.getPhoneNumber()
+        );
+    }
+
+    public UserDTO.Response updateByEmail(String emailToFind, UserDTO.UpdateUserByAdmin dto) {
+            User user = userRepository.findByEmail(emailToFind)
+                    .orElseThrow(() -> new RuntimeException("No se encontró el usuario con email: " + emailToFind));
+
+            return processUpdate(user, dto);
+        }
+
+    public UserDTO.Response updateByPhone(String phoneToFind, UserDTO.UpdateUserByAdmin dto) {
+            UserContact contact = userContactRepository.findByPhoneNumber(phoneToFind)
+                    .orElseThrow(() -> new RuntimeException("No se encontró el usuario con teléfono: " + phoneToFind));
+            
+            User user = contact.getUser();
+
+            return processUpdate(user, dto);
+    }
+
+    private UserDTO.Response processUpdate(User user, UserDTO.UpdateUserByAdmin dto) {
+        UserContact contact = userContactRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
+
+        if (dto.email() != null && !dto.email().isBlank()) {
+            user.setEmail(dto.email());
+        }
+
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
+        }
+
+        if (dto.name() != null && !dto.name().isBlank()) contact.setName(dto.name());
+        if (dto.lastName() != null && !dto.lastName().isBlank()) contact.setLastName(dto.lastName());
+
+        if (dto.phone() != null && !dto.phone().isBlank() && !dto.phone().equals(contact.getPhoneNumber())) {
+            validations.contactValidate(dto.phone());
+            contact.setPhoneNumber(dto.phone());
+        }
+
+        userRepository.save(user);
+        userContactRepository.save(contact);
+
+        return new UserDTO.Response(
+                user.getEmail(),
+                contact.getName(),
+                contact.getLastName(),
+                contact.getPhoneNumber()
+        );
+    }
+
+    public UserDTO.Response getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+
+        UserContact contact = userContactRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Detalles de contacto no encontrados para este usuario."));
+
+        return new UserDTO.Response(
+                user.getEmail(),
+                contact.getName(),
+                contact.getLastName(),
+                contact.getPhoneNumber()
+        );
+    }
+
+    public UserDTO.Response getUserByPhone(String phoneNumber) {
+        UserContact contact = userContactRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new RuntimeException("No existe un usuario con el teléfono: " + phoneNumber));
+
+        User user = contact.getUser(); 
+
+        return new UserDTO.Response(
+                user.getEmail(),
+                contact.getName(),
+                contact.getLastName(),
+                contact.getPhoneNumber()
+        );
+    }
+
+    public List<UserDTO.Response> listUsers() {
+        return userRepository.findAll().stream()
+            .map(user -> {
+                UserContact contact = user.getUserContact(); 
+                return new UserDTO.Response(
+                    user.getEmail(),
+                    contact != null ? contact.getName() : "Nombre no encontrado.",
+                    contact != null ? contact.getLastName() : "Apellido no encontrado.",
+                    contact != null ? contact.getPhoneNumber() : "Telefóno no encontrado."
+                );
+            })
+            .toList();
+    }
 
 }

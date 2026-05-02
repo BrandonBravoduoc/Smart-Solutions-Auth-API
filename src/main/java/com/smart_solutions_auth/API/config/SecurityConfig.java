@@ -12,6 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.smart_solutions_auth.API.exception.CustomAccessDeniedHandler;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -21,8 +24,9 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    @Bean
+   @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> csrf.disable()) 
@@ -30,7 +34,6 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll() 
-                .requestMatchers("/api/v1/roles/**").hasAnyRole("ADMINISTRADOR", "ADMIN") 
                 .requestMatchers(
                     "/v3/api-docs/**",
                     "/v3/api-docs.yaml",
@@ -40,6 +43,9 @@ public class SecurityConfig {
                     "/swagger-resources/**"
                 ).permitAll()
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(exception -> exception
+                .accessDeniedHandler(accessDeniedHandler)
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
