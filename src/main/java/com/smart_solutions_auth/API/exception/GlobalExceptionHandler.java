@@ -24,7 +24,8 @@ public class GlobalExceptionHandler {
 
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("errors", errors); 
+        response.put("error", "Error de validación");
+        response.put("details", errors); 
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); 
     }
@@ -34,10 +35,10 @@ public class GlobalExceptionHandler {
         Map<String, Object> errorDetails = new HashMap<>();
         
         errorDetails.put("timestamp", LocalDateTime.now());
-        errorDetails.put("status", HttpStatus.UNAUTHORIZED.value());
+        errorDetails.put("status", HttpStatus.BAD_REQUEST.value());
         errorDetails.put("message", ex.getMessage()); 
         errorDetails.put("path", "Check your request details");
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetails);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 }

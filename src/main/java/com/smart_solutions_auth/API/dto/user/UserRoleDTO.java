@@ -11,7 +11,7 @@ public class UserRoleDTO {
         String nameRole
     ){}
 
-    public record CreateRoleResponse(
+    public record Response(
         Long id,
         String nameRole,
         String message
