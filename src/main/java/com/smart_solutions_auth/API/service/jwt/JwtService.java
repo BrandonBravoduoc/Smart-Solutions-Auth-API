@@ -25,9 +25,6 @@ public class JwtService {
 
     public String generateToken(User user) {
         return Jwts.builder()
-                .subject(user.getEmail())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .claim("userId", user.getId()) // Guardamos el ID como número
                 .claim("role", user.getUserRole().getNameRole()) 
                 .signWith(getSigningKey())
