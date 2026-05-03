@@ -1,5 +1,6 @@
 package com.smart_solutions_auth.API.service;
 
+import com.smart_solutions_auth.API.repository.AddressRepository;
 import com.smart_solutions_auth.API.repository.UserContactRepository;
 import com.smart_solutions_auth.API.repository.UserRepository;
 import com.smart_solutions_auth.API.service.jwt.JwtService;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.API.dto.user.UserDTO;
+import com.smart_solutions_auth.API.model.Address;
 import com.smart_solutions_auth.API.model.User;
 import com.smart_solutions_auth.API.model.UserContact;
 import com.smart_solutions_auth.API.model.UserRole;
@@ -34,6 +36,9 @@ public class UserService {
     private  PasswordEncoder passwordEncoder;
 
     @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
     private Validations validations;
 
     @Autowired
@@ -54,12 +59,16 @@ public class UserService {
         user.setUserRole(role);
         user.setAsset(true);
 
+        Address sucursal = addressRepository.findById(dto.addressId())
+            .orElseThrow(() -> new RuntimeException("Sucursal no encontrada."));
+
         User userSaved = userRepository.save(user);
 
         UserContact userContact = new UserContact();
         userContact.setName(dto.name());
         userContact.setLastName(dto.lastName());
         userContact.setPhoneNumber(dto.phone());
+        userContact.setUserAddress(sucursal);
         userContact.setUser(userSaved);
 
         userContactRepository.save(userContact);
@@ -93,7 +102,8 @@ public class UserService {
             user.getEmail(),
             userContact.getName(),
             userContact.getLastName(),
-            userContact.getPhoneNumber()
+            userContact.getPhoneNumber(),
+            sucursal.getSucursalName()
         );
     }
 
@@ -196,12 +206,14 @@ public class UserService {
 
         UserContact userContact = userContactRepository.findByUserId(userId)
             .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
-
+        
+     
         return new UserDTO.Response(
             user.getEmail(),
             userContact.getName(),
             userContact.getLastName(),
-            userContact.getPhoneNumber()
+            userContact.getPhoneNumber(),
+            userContact.getUserAddress().getSucursalName()
         );
     }
 
@@ -241,6 +253,12 @@ public class UserService {
             contact.setPhoneNumber(dto.phone());
         }
 
+        if (dto.addressId() != null) {
+            Address newBranch = addressRepository.findById(dto.addressId())
+                .orElseThrow(() -> new RuntimeException("Nueva sucursal no encontrada."));
+            contact.setUserAddress(newBranch);
+        }
+
         userRepository.save(user);
         userContactRepository.save(contact);
 
@@ -248,7 +266,9 @@ public class UserService {
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
-                contact.getPhoneNumber()
+                contact.getPhoneNumber(),
+                contact.getUserAddress().getSucursalName()
+
         );
     }
 
@@ -259,25 +279,29 @@ public class UserService {
         UserContact contact = userContactRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Detalles de contacto no encontrados para este usuario."));
 
+
         return new UserDTO.Response(
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
-                contact.getPhoneNumber()
+                contact.getPhoneNumber(),
+                contact.getUserAddress().getSucursalName()
+                
         );
     }
 
     public UserDTO.Response getUserByPhone(String phoneNumber) {
         UserContact contact = userContactRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("No existe un usuario con el teléfono: " + phoneNumber));
-
+        
         User user = contact.getUser(); 
 
         return new UserDTO.Response(
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
-                contact.getPhoneNumber()
+                contact.getPhoneNumber(),
+                contact.getUserAddress().getSucursalName()
         );
     }
 
@@ -289,7 +313,8 @@ public class UserService {
                     user.getEmail(),
                     contact != null ? contact.getName() : "Nombre no encontrado.",
                     contact != null ? contact.getLastName() : "Apellido no encontrado.",
-                    contact != null ? contact.getPhoneNumber() : "Telefóno no encontrado."
+                    contact != null ? contact.getPhoneNumber() : "Telefóno no encontrado.",
+                    contact != null ? contact.getUserAddress().getSucursalName() : "Sin sucursal registrada."
                 );
             })
             .toList();

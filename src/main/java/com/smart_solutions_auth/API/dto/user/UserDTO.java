@@ -28,7 +28,11 @@ public class UserDTO {
 
         @NotBlank(message = "El teléfono es obligatorio.")
         @Size(min = 9, max = 9, message = "El teléfono debe tener 9 dígitos.")
-        String phone
+        String phone,
+
+        @NotBlank(message ="Debe seleccionar una suscursal.")
+        Long addressId
+
 
     ){}
 
@@ -36,7 +40,8 @@ public class UserDTO {
         String email,
         String name,
         String lastName,
-        String phone
+        String phone,
+        String sucursalName
     ){}
 
     //-------------------------------------------------------------------------------------------------------
@@ -92,7 +97,8 @@ public class UserDTO {
         
         String name,
         String lastName,
-        String phone
+        String phone,
+        Long addressId
     ){}
 
 }
