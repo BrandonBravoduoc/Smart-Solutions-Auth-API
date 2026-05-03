@@ -80,7 +80,7 @@ public class UserService {
             .httpOnly(true)
             .secure(false)
             .path("/")
-            .maxAge(60)
+            .maxAge(3600)
             .sameSite("Strict")
             .build();
 
@@ -146,7 +146,7 @@ public class UserService {
                 .httpOnly(true)
                 .secure(false) 
                 .path("/")
-                .maxAge(60)
+                .maxAge(3600)
                 .sameSite("Strict")
                 .build();
         
