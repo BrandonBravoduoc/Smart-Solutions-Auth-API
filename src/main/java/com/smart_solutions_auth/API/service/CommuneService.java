@@ -10,6 +10,7 @@ import com.smart_solutions_auth.API.model.Commune;
 import com.smart_solutions_auth.API.model.Region;
 import com.smart_solutions_auth.API.repository.CommuneRepository;
 import com.smart_solutions_auth.API.repository.RegionRepository;
+import com.smart_solutions_auth.API.util.Validations;
 
 import jakarta.transaction.Transactional;
 
@@ -19,10 +20,12 @@ public class CommuneService {
 
 	private final CommuneRepository communeRepository;
 	private final RegionRepository regionRepository;
+	private final Validations validations;
 
-	public CommuneService(CommuneRepository communeRepository, RegionRepository regionRepository) {
+	public CommuneService(CommuneRepository communeRepository, RegionRepository regionRepository, Validations validations) {
 		this.communeRepository = communeRepository;
 		this.regionRepository = regionRepository;
+		this.validations = validations;
 	}
 
 	public List<CommuneDTO.Response> findAll() {
@@ -37,8 +40,7 @@ public class CommuneService {
 	}
 
 	public CommuneDTO.Response findById(Long id) {
-		Commune c = communeRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Comuna no encontrada."));
+		Commune c = validations.requireCommune(id);
 		
 		return new CommuneDTO.Response(
 			c.getId(),
@@ -49,8 +51,7 @@ public class CommuneService {
 	}
 
 	public CommuneDTO.Response create(CommuneDTO.CreateRequest dto) {
-		Region region = regionRepository.findById(dto.regionId())
-			.orElseThrow(() -> new RuntimeException("Región no encontrada."));
+		Region region = validations.requireRegion(dto.regionId());
 		Commune commune = new Commune();
 		
 		commune.setCommuneName(dto.communeName());
@@ -66,11 +67,9 @@ public class CommuneService {
 	}
 
 	public CommuneDTO.Response update(CommuneDTO.UpdateRequest dto) {
-		Commune commune = communeRepository.findById(dto.id())
-			.orElseThrow(() -> new RuntimeException("Comuna no encontrada."));
+		Commune commune = validations.requireCommune(dto.id());
 
-		Region region = regionRepository.findById(dto.regionId())
-			.orElseThrow(() -> new RuntimeException("Región no encontrada."));
+		Region region = validations.requireRegion(dto.regionId());
 		
 		commune.setCommuneName(dto.communeName());
 		commune.setRegion(region);

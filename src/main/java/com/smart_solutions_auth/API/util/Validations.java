@@ -1,5 +1,7 @@
 package com.smart_solutions_auth.API.util;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +12,12 @@ import com.smart_solutions_auth.API.model.UserRole;
 import com.smart_solutions_auth.API.repository.UserContactRepository;
 import com.smart_solutions_auth.API.repository.UserRepository;
 import com.smart_solutions_auth.API.repository.UserRoleRepository;
+import com.smart_solutions_auth.API.repository.RegionRepository;
+import com.smart_solutions_auth.API.repository.CommuneRepository;
+import com.smart_solutions_auth.API.repository.AddressRepository;
+import com.smart_solutions_auth.API.model.Region;
+import com.smart_solutions_auth.API.model.Commune;
+import com.smart_solutions_auth.API.model.Address;
 
 @Component
 public class Validations {
@@ -25,6 +33,15 @@ public class Validations {
 
     @Autowired
     private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private RegionRepository regionRepository;
+
+    @Autowired
+    private CommuneRepository communeRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     public String emailValidate(String email) {
         if(userRepository.existsByEmail(email)){
@@ -74,4 +91,22 @@ public class Validations {
         return (Long) details;
     }
 
+    public Region requireRegion(Long id) {
+        return regionRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Region no encontrada."));
+    }
+
+    public Commune requireCommune(Long id) {
+        return communeRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Comuna no encontrada."));
+    }
+
+    public Address requireAddress(Long id) {
+        return addressRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Dirección no encontrada."));
+    }
+
+
+    
+    
 }

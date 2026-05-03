@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.smart_solutions_auth.API.dto.address.RegionDTO;
 import com.smart_solutions_auth.API.model.Region;
 import com.smart_solutions_auth.API.repository.RegionRepository;
+import com.smart_solutions_auth.API.util.Validations;
 
 import jakarta.transaction.Transactional;
 
@@ -16,9 +17,11 @@ import jakarta.transaction.Transactional;
 public class RegionService {
 
 	private final RegionRepository regionRepository;
+	private final Validations validations;
 
-	public RegionService(RegionRepository regionRepository) {
+	public RegionService(RegionRepository regionRepository, Validations validations) {
 		this.regionRepository = regionRepository;
+		this.validations = validations;
 	}
 
 	public List<RegionDTO.Response> findAll() {
@@ -31,8 +34,7 @@ public class RegionService {
 	}
 
 	public RegionDTO.Response findById(Long id) {
-		Region r = regionRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Region no encontrada."));
+		Region r = validations.requireRegion(id);
 		
 		return new RegionDTO.Response(
 			r.getId(), 
@@ -50,8 +52,7 @@ public class RegionService {
 	}
 
 	public RegionDTO.Response update(RegionDTO.UpdateRequest dto) {
-		Region region = regionRepository.findById(dto.id())
-			.orElseThrow(() -> new RuntimeException("Region no encontrada."));
+		Region region = validations.requireRegion(dto.id());
 		region.setRegionName(dto.regionName());
 		Region saved = regionRepository.save(region);
 		

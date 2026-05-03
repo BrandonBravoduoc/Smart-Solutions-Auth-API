@@ -10,6 +10,7 @@ import com.smart_solutions_auth.API.model.Address;
 import com.smart_solutions_auth.API.model.Commune;
 import com.smart_solutions_auth.API.repository.AddressRepository;
 import com.smart_solutions_auth.API.repository.CommuneRepository;
+import com.smart_solutions_auth.API.util.Validations;
 
 import jakarta.transaction.Transactional;
 
@@ -19,11 +20,13 @@ public class AddressService {
 
 	private final AddressRepository addressRepository;
 	private final CommuneRepository communeRepository;
+	private final Validations validations;
 
-	public AddressService(AddressRepository addressRepository, CommuneRepository communeRepository) {
+	public AddressService(AddressRepository addressRepository, CommuneRepository communeRepository, Validations validations) {
 
 		this.addressRepository = addressRepository;
 		this.communeRepository = communeRepository;
+		this.validations = validations;
 	}
 
     
@@ -39,8 +42,7 @@ public class AddressService {
 	}
 
 	public AddressDTO.Response findById(Long id) {
-		Address a = addressRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Dirección no encontrada."));
+		Address a = validations.requireAddress(id);
 		
 		return new AddressDTO.Response(
 			a.getStreet(), 
@@ -50,8 +52,7 @@ public class AddressService {
 	}
 
 	public AddressDTO.Response create(AddressDTO.CreateRequest dto) {
-		Commune commune = communeRepository.findById(dto.communeId())
-			.orElseThrow(() -> new RuntimeException("Comuna no encontrada."));
+		Commune commune = validations.requireCommune(dto.communeId());
 		Address a = new Address();
 		
 		a.setStreet(dto.street());
@@ -67,11 +68,9 @@ public class AddressService {
 	}
 
 	public AddressDTO.Response update(AddressDTO.UpdateRequest dto) {
-		Address a = addressRepository.findById(dto.id())
-			.orElseThrow(() -> new RuntimeException("Dirección no encontrada."));
+		Address a = validations.requireAddress(dto.id());
 
-		Commune commune = communeRepository.findById(dto.communeId())
-			.orElseThrow(() -> new RuntimeException("Comuna no encontrada."));
+		Commune commune = validations.requireCommune(dto.communeId());
 		
 		a.setStreet(dto.street());
 		a.setNumber(dto.number());
