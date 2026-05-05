@@ -31,6 +31,7 @@ public class AddressService {
 	public List<AddressDTO.Response> findAll() {
 		return addressRepository.findAll().stream()
 			.map(a -> new AddressDTO.Response(
+				a.getId(),
 				a.getSucursalName(),
 				a.getStreet(), 
 				a.getNumber(), 
@@ -44,6 +45,7 @@ public class AddressService {
 			.orElseThrow(() -> new RuntimeException("Dirección no encontrada."));
 		
 		return new AddressDTO.Response(
+			a.getId(),
 			a.getSucursalName(),
 			a.getStreet(), 
 			a.getNumber(), 
@@ -62,6 +64,7 @@ public class AddressService {
 		Address saved = addressRepository.save(a);
 		
 		return new AddressDTO.Response(
+			a.getId(),
 			a.getSucursalName(),
 			saved.getStreet(), 
 			saved.getNumber(), 
@@ -83,6 +86,7 @@ public class AddressService {
 		Address saved = addressRepository.save(a);
 		
 		return new AddressDTO.Response(
+			a.getId(),
 			a.getSucursalName(),
 			saved.getStreet(), 
 			saved.getNumber(), 

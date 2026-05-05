@@ -48,6 +48,7 @@ public class AddressDTO {
 
 	@Schema(name = "AddressResponse")
 	public record Response(
+		Long id,
 		String sucursalName,
 		String street,
 		String number,
