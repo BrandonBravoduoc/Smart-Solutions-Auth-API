@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.api.model.User;
@@ -16,8 +17,9 @@ import javax.crypto.SecretKey;
 @Service
 public class JwtService {
 
-    private final String secretKeyString = "tu_clave_secreta_super_segura_y_larga_123456_debe_tener_mas_de_32_caracteres";
-    private final long expiration = 3600000; 
+    @Value("${jwt.secret}")
+    private String secretKeyString;    private final long expiration = 3600000; 
+    
     private final long refreshExpiration = 604800000; 
 
     private SecretKey getSigningKey() {
