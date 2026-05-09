@@ -15,9 +15,9 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 
 @Service
-public class JwtService {
+public class JwtService { 
 
-    @Value("${jwt.secret}")
+    @Value("${JWT.SECRET}")
     private String secretKeyString;    private final long expiration = 3600000; 
     
     private final long refreshExpiration = 604800000; 
