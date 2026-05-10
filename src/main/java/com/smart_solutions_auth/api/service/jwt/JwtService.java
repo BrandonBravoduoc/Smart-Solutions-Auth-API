@@ -17,10 +17,14 @@ import javax.crypto.SecretKey;
 @Service
 public class JwtService { 
 
-    @Value("${JWT.SECRET}")
-    private String secretKeyString;    private final long expiration = 3600000; 
+    @Value("${jwt.secret}")
+    private String secretKeyString; 
     
-    private final long refreshExpiration = 604800000; 
+    @Value("${jwt.expiration}")
+    private long expiration; 
+    
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration; 
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKeyString.getBytes());
@@ -31,7 +35,7 @@ public class JwtService {
                 .subject(user.getEmail())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
-                .claim("userId", user.getId()) // Guardamos el ID como número
+                .claim("userId", user.getId())
                 .claim("role", user.getUserRole().getNameRole()) 
                 .signWith(getSigningKey())
                 .compact();
@@ -71,7 +75,7 @@ public class JwtService {
             .subject(user.getEmail())
             .issuedAt(new Date())
             .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
-            .claim("userId", user.getId()) // También incluimos el ID aquí por si acaso
+            .claim("userId", user.getId())
             .signWith(getSigningKey())
             .compact();
     }
