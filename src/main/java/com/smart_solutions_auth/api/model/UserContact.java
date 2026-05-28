@@ -1,5 +1,7 @@
 package com.smart_solutions_auth.api.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserContact {
+public class UserContact implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

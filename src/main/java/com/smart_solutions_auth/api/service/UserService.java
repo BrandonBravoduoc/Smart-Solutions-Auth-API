@@ -5,6 +5,8 @@ package com.smart_solutions_auth.api.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,10 @@ public class UserService {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private CacheManager cacheManager;
+
 
     public UserDTO.Response userRegister(UserDTO.RegisterRequest dto, HttpServletResponse response){
         
@@ -99,6 +105,7 @@ public class UserService {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
+        cleanUserListCache();
 
         return new UserDTO.Response(
             user.getEmail(),
@@ -123,6 +130,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.newPassword()));
         userRepository.save(user);
 
+        evictUserCache(user.getEmail());
+
         return new UserDTO.ChangePasswordResponse("Contraseña actualizada exitosamente.");
     }
 
@@ -140,6 +149,9 @@ public class UserService {
             throw new RuntimeException("Los correos electrónicos no coinciden.");
         }
 
+        String oldEmail = user.getEmail();
+
+
         user.setEmail(newEmail);
         userRepository.save(user);
 
@@ -153,6 +165,11 @@ public class UserService {
                 .build();
         
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
+
+        evictUserCache(oldEmail);
+        evictUserCache(newEmail);
+        cleanUserListCache();
+
 
         return new UserDTO.UpdateEmailResponse(user.getEmail(), "Correo actualizado exitosamente.");
     }
@@ -195,6 +212,8 @@ public class UserService {
                 .build();
         
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, deleteCookie.toString());
+        evictUserCache(user.getEmail());
+        cleanUserListCache();
         
         return true;
     }
@@ -203,15 +222,13 @@ public class UserService {
 
         Long userId = validations.getCurrentUserId();
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
         UserContact userContact = userContactRepository.findByUserId(userId)
             .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
         
      
         return new UserDTO.Response(
-            user.getEmail(),
+            userContact.getUser().getEmail(),
             userContact.getName(),
             userContact.getLastName(),
             userContact.getPhoneNumber(),
@@ -239,6 +256,8 @@ public class UserService {
         UserContact contact = userContactRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
 
+        String oldEmail = user.getEmail();
+
         if (dto.email() != null && !dto.email().isBlank()) {
             user.setEmail(dto.email());
         }
@@ -263,6 +282,10 @@ public class UserService {
 
         userRepository.save(user);
         userContactRepository.save(contact);
+
+        evictUserCache(oldEmail);
+        evictUserCache(user.getEmail());
+        cleanUserListCache();
 
         return new UserDTO.Response(
                 user.getEmail(),
@@ -307,6 +330,8 @@ public class UserService {
         );
     }
 
+
+    @Cacheable(value = "users", key = "#email", unless = "#result == null")
     public List<UserDTO.Response> listUsers() {
         return userRepository.findAll().stream()
             .map(user -> {
@@ -321,5 +346,18 @@ public class UserService {
             })
             .toList();
     }
+
+    private void evictUserCache(String email){
+        if(email != null && cacheManager.getCache("users") != null){
+            cacheManager.getCache("users").evict(email);
+        }
+    }
+
+    private void cleanUserListCache(){
+        if(cacheManager.getCache("users") != null){
+            cacheManager.getCache("users").clear();
+        }
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.smart_solutions_auth.api.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import lombok.ToString;
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails { 
+public class User implements UserDetails, Serializable { 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
