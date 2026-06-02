@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.api.dto.address.CommuneDTO;
-import com.smart_solutions_auth.api.model.Commune;
-import com.smart_solutions_auth.api.model.Region;
+import com.smart_solutions_auth.api.model.cache.CommuneCache;
+import com.smart_solutions_auth.api.model.cache.RegionCache;
+import com.smart_solutions_auth.api.model.entity.Commune;
+import com.smart_solutions_auth.api.model.entity.Region;
 import com.smart_solutions_auth.api.repository.CommuneRepository;
 import com.smart_solutions_auth.api.util.Validations;
 
@@ -25,29 +29,20 @@ public class CommuneService {
 	private  Validations validations;
 
 
+	@Cacheable(value = "communes")
+	public List<CommuneCache> findAll() {
+        return communeRepository.findAll().stream()
+            .map(this::mapToCache) 
+            .collect(Collectors.toList());
+    }
 
-	public List<CommuneDTO.Response> findAll() {
-		return communeRepository.findAll().stream()
-			.map(c -> new CommuneDTO.Response(
-				c.getId(),
-				c.getCommuneName(),
-				c.getRegion() != null ? c.getRegion().getId() : null,
-				c.getRegion() != null ? c.getRegion().getRegionName() : null
-			))
-			.collect(Collectors.toList());
-	}
+	@Cacheable(value = "communes", key = "#id")
+	public CommuneCache findById(Long id) {
+        Commune c = validations.requireCommune(id);
+        return mapToCache(c); 
+    }
 
-	public CommuneDTO.Response findById(Long id) {
-		Commune c = validations.requireCommune(id);
-		
-		return new CommuneDTO.Response(
-			c.getId(),
-			c.getCommuneName(),
-			c.getRegion() != null ? c.getRegion().getId() : null,
-			c.getRegion() != null ? c.getRegion().getRegionName() : null
-		);
-	}
-
+	@CacheEvict(value = {"communes"}, allEntries = true)
 	public CommuneDTO.Response create(CommuneDTO.CreateRequest dto) {
 		Region region = validations.requireRegion(dto.regionId());
 		Commune commune = new Commune();
@@ -64,6 +59,7 @@ public class CommuneService {
 		);
 	}
 
+	@CacheEvict(value = {"communes"}, allEntries = true)
 	public CommuneDTO.Response update(CommuneDTO.UpdateRequest dto) {
 		Commune commune = validations.requireCommune(dto.id());
 
@@ -81,7 +77,19 @@ public class CommuneService {
 		);
 	}
 
+	@CacheEvict(value = {"communes"}, allEntries = true)
 	public void delete(Long id) {
 		communeRepository.deleteById(id);
 	}
+
+	private CommuneCache mapToCache(Commune c) {
+        RegionCache regionCache = null;
+        if (c.getRegion() != null) {
+            regionCache = new RegionCache(
+				c.getRegion().getId(), 
+				c.getRegion().getRegionName());
+        }
+        return new CommuneCache(c.getId(), c.getCommuneName(), regionCache);
+    }
+
 }

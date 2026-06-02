@@ -8,12 +8,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.smart_solutions_auth.api.model.Address;
-import com.smart_solutions_auth.api.model.Commune;
-import com.smart_solutions_auth.api.model.Region;
-import com.smart_solutions_auth.api.model.User;
-import com.smart_solutions_auth.api.model.UserContact;
-import com.smart_solutions_auth.api.model.UserRole;
+import com.smart_solutions_auth.api.model.entity.Address;
+import com.smart_solutions_auth.api.model.entity.Commune;
+import com.smart_solutions_auth.api.model.entity.Region;
+import com.smart_solutions_auth.api.model.entity.User;
+import com.smart_solutions_auth.api.model.entity.UserContact;
+import com.smart_solutions_auth.api.model.entity.UserRole;
 import com.smart_solutions_auth.api.repository.AddressRepository;
 import com.smart_solutions_auth.api.repository.CommuneRepository;
 import com.smart_solutions_auth.api.repository.RegionRepository;

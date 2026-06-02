@@ -1,4 +1,4 @@
-package com.smart_solutions_auth.api.model;
+package com.smart_solutions_auth.api.model.entity;
 
 import java.util.List;
 

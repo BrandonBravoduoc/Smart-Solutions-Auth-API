@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.api.dto.auth.AuthDTO;
-import com.smart_solutions_auth.api.model.User;
+import com.smart_solutions_auth.api.model.entity.User;
 import com.smart_solutions_auth.api.repository.UserRepository;
 import com.smart_solutions_auth.api.service.jwt.JwtService;
 import com.smart_solutions_auth.api.util.Validations;

@@ -18,6 +18,7 @@ import com.smart_solutions_auth.api.service.CommuneService;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.smart_solutions_auth.api.model.cache.CommuneCache;
 
 
 @RestController
@@ -32,13 +33,13 @@ public class CommuneController {
     }
 
     @GetMapping
-    public List<CommuneDTO.Response> getAll() {
+    public List<CommuneCache> getAll() {
 
         return communeService.findAll();
     }
 
     @GetMapping("/{id}")
-    public CommuneDTO.Response getById(@PathVariable Long id) {
+    public CommuneCache getById(@PathVariable Long id) {
 
         return communeService.findById(id);
     }

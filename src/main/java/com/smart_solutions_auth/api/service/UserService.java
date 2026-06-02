@@ -5,15 +5,17 @@ package com.smart_solutions_auth.api.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.api.dto.user.UserDTO;
-import com.smart_solutions_auth.api.model.Address;
-import com.smart_solutions_auth.api.model.User;
-import com.smart_solutions_auth.api.model.UserContact;
-import com.smart_solutions_auth.api.model.UserRole;
+import com.smart_solutions_auth.api.model.entity.Address;
+import com.smart_solutions_auth.api.model.entity.User;
+import com.smart_solutions_auth.api.model.entity.UserContact;
+import com.smart_solutions_auth.api.model.entity.UserRole;
 import com.smart_solutions_auth.api.repository.AddressRepository;
 import com.smart_solutions_auth.api.repository.UserContactRepository;
 import com.smart_solutions_auth.api.repository.UserRepository;
@@ -109,6 +111,7 @@ public class UserService {
         );
     }
 
+    @CacheEvict(value = "users", key = "#userId")
     public UserDTO.ChangePasswordResponse changePassword(UserDTO.ChangePasswordRequest dto) {
         Long userId = validations.getCurrentUserId();
         User user = userRepository.findById(userId)
@@ -126,6 +129,7 @@ public class UserService {
         return new UserDTO.ChangePasswordResponse("Contraseña actualizada exitosamente.");
     }
 
+    @CacheEvict(value = "users", key = "#userId")
     public UserDTO.UpdateEmailResponse updateEmail(UserDTO.UpdateEmailRequest dto, HttpServletResponse response) {
         Long userId = validations.getCurrentUserId();
         User user = userRepository.findById(userId)
@@ -199,6 +203,7 @@ public class UserService {
         return true;
     }
 
+    @Cacheable(value = "users", key = "#userId")
     public UserDTO.Response profile(){
 
         Long userId = validations.getCurrentUserId();
@@ -234,6 +239,7 @@ public class UserService {
 
             return processUpdate(user, dto);
     }
+
 
     private UserDTO.Response processUpdate(User user, UserDTO.UpdateUserByAdmin dto) {
         UserContact contact = userContactRepository.findByUserId(user.getId())
@@ -274,6 +280,7 @@ public class UserService {
         );
     }
 
+    
     public UserDTO.Response getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
