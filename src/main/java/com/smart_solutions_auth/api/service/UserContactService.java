@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.api.dto.user.UserContactDTO;
-import com.smart_solutions_auth.api.model.UserContact;
+import com.smart_solutions_auth.api.model.entity.UserContact;
 import com.smart_solutions_auth.api.repository.UserContactRepository;
 import com.smart_solutions_auth.api.util.Validations;
 

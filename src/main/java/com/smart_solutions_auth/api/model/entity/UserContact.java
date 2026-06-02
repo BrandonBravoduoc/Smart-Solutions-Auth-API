@@ -1,4 +1,4 @@
-package com.smart_solutions_auth.api.model;
+package com.smart_solutions_auth.api.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,27 +13,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_addresses")
+@Table(name = "user_contacts")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Address {
-    
+public class UserContact {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sucursal", nullable = false)
-    private String sucursalName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "street", nullable = false)
-    private String street;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
-    @Column(name = "number", nullable = false)
-    private String number;
+    @Column(name = "phone_number", nullable = false, unique = true)
+    private String phoneNumber;
 
     @ManyToOne
-    @JoinColumn(name = "commune_id", nullable = false)
-    private Commune commune;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "user_address_id", nullable = true)
+    private Address userAddress;
 
 }

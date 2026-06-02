@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.smart_solutions_auth.api.model.UserContact;
+import com.smart_solutions_auth.api.model.entity.UserContact;
 
 
 public interface UserContactRepository extends JpaRepository<UserContact, Long> {

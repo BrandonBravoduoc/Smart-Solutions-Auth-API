@@ -1,8 +1,4 @@
-package com.smart_solutions_auth.api.model;
-
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+package com.smart_solutions_auth.api.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,32 +7,33 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "communes")
+@Table(name = "user_addresses")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Commune {
+public class Address {
     
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "commune_name", nullable = false, unique = true)
-    private String communeName;
+    @Column(name = "sucursal", nullable = false)
+    private String sucursalName;
 
-    @OneToMany(mappedBy = "street")
-    @JsonIgnore
-    private List<Address> userAddress;
+    @Column(name = "street", nullable = false)
+    private String street;
+
+    @Column(name = "number", nullable = false)
+    private String number;
 
     @ManyToOne
-    @JoinColumn(name = "region_id", nullable = false)
-    private Region region;
+    @JoinColumn(name = "commune_id", nullable = false)
+    private Commune commune;
+
 }

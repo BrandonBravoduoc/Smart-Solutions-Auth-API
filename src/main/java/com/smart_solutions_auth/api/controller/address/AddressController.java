@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smart_solutions_auth.api.dto.address.AddressDTO;
+import com.smart_solutions_auth.api.model.cache.AddressCache;
 import com.smart_solutions_auth.api.service.AddressService;
 
 
@@ -28,12 +29,14 @@ public class AddressController {
     }
 
     @GetMapping
-    public List<AddressDTO.Response> getAll() {
+    public List<AddressCache> getAll() {
         return addressService.findAll();
     }
 
+
     @GetMapping("/{id}")
-    public AddressDTO.Response getById(@PathVariable Long id) {
+
+    public AddressCache getById(@PathVariable Long id) {
         return addressService.findById(id);
     }
 
