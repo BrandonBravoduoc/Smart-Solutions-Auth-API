@@ -18,6 +18,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 @Configuration
 @EnableCaching
@@ -51,23 +53,23 @@ public class CacheConfig {
             .build();
     }
 
-    @Bean
+ @Bean
     public CacheErrorHandler errorHandler(){
         return new SimpleCacheErrorHandler(){
 
             @Override
-            public void handleCacheGetError(RuntimeException exception, Cache cache, Object key){
+            public void handleCacheGetError(@NonNull RuntimeException exception, @NonNull Cache cache, @NonNull Object key){
                 log.error("Error al LEER. Info -> Tabla {}, Llave: {}, Error: {}", cache.getName(), key, exception);
             } 
 
             @Override
-            public void handleCachePutError(RuntimeException exception, Cache cache, Object key, Object value){
+            public void handleCachePutError(@NonNull RuntimeException exception, @NonNull Cache cache, @NonNull Object key, @Nullable Object value){
                 log.error("Redis caído al ESCRIBIR. Info -> Tabla: {}, Llave: {}. Error: {}", 
                         cache.getName(), key, exception.getMessage());
             } 
             
             @Override
-            public void handleCacheEvictError(RuntimeException exception, Cache cache, Object key){
+            public void handleCacheEvictError(@NonNull RuntimeException exception, @NonNull Cache cache, @NonNull Object key){
                 log.error("Error crítico al borrar caché. Relanzando error para evitar inconsistencias.");
                 throw exception;
             } 
