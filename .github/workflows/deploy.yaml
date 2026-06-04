@@ -27,15 +27,8 @@ jobs:
     - name: Construir y subir la imagen Docker
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: api-gateway 
+        ECR_REPOSITORY: api-auth
         IMAGE_TAG: latest
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-    - name: Actualizar el servicio en Amazon ECS
-      run: |
-        aws ecs update-service \
-          --cluster default \
-          --service api-gateway \
-          --force-new-deployment
