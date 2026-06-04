@@ -22,13 +22,15 @@ public class UserDTO {
         String confirmPassword,
 
         @NotBlank(message = "El nombre es obligatorio.")
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String name,
 
         @NotBlank(message = "El apellido es obligatorio.")
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String lastName,
 
         @NotBlank(message = "El teléfono es obligatorio.")
-        @Size(min = 9, max = 9, message = "El teléfono debe tener 9 dígitos.")
+        @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe contener exactamente 9 dígitos sin espacios ni caracteres especiales.")
         String phone,
 
         @NotNull(message ="Debe seleccionar una suscursal.")
@@ -96,8 +98,11 @@ public class UserDTO {
                  message = "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número")
         String password,
         
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String name,
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String lastName,
+        @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe contener exactamente 9 dígitos sin espacios ni caracteres especiales.")
         String phone,
         Long addressId
     ){}
