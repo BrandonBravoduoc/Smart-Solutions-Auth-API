@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/regions/**").permitAll()
                 .requestMatchers("/api/v1/communes/**").permitAll()
                 .requestMatchers("/api/v1/addresses/**").permitAll()
+                .requestMatchers("/api/v1/healths/**", "/api/v1/healths").permitAll()
                 .requestMatchers(
                     "/v3/api-docs/**",
                     "/v3/api-docs.yaml",
