@@ -49,5 +49,5 @@ jobs:
       run: |
         aws ecs update-service \
           --cluster  default \
-          --service api-auth-8979 \
+          --service api-auth-def-v1-service-3e1246b5 \
           --force-new-deployment
