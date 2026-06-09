@@ -9,4 +9,4 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar /app/app.jar
 ENV SERVER_PORT=8081
 EXPOSE 8081
-ENTRYPOINT ["sh", "-c", "java -XX:+UseContainerSupport -Dserver.port=${SERVER_PORT} -jar /app/app.jar"] 
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-Dserver.port=${SERVER_PORT}", "-jar", "/app/app.jar"]
