@@ -1,13 +1,13 @@
 logging:
   level:
     root: INFO
-    org.springframework.data.redis: DEBUG
-    io.lettuce.core: DEBUG
 
 server:
   port: ${SERVER_PORT:8081}
 
 spring:
+  cache:
+    type: redis
   data:
     redis:
       host: ${REDIS_HOST:smart-solutions-cache-po4yvy.serverless.sae1.cache.amazonaws.com}
@@ -16,12 +16,8 @@ spring:
       password: ${REDIS_PASSWORD:}
       ssl:
         enabled: ${REDIS_SSL:true}
-      timeout: 10000ms
-      connect-timeout: 10000ms
-      lettuce:
-        pool:
-          enabled: true
-          max-active: 8
+      timeout: ${REDIS_TIMEOUT:5s}
+      connect-timeout: ${REDIS_CONNECT_TIMEOUT:10s}
 
   datasource:
     url: ${DB_URL:jdbc:h2:mem:auth_db}

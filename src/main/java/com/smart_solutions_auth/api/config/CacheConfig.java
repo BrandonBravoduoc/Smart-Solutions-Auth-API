@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
@@ -26,11 +27,16 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 
+import io.lettuce.core.ClientOptions;
+
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
     private static final Logger log = LoggerFactory.getLogger(CacheConfig.class);
+
+    private static final Duration DEFAULT_COMMAND_TIMEOUT = Duration.ofSeconds(5);
+    private static final Duration DEFAULT_SHUTDOWN_TIMEOUT = Duration.ofMillis(200);
 
     @Value("${spring.data.redis.host}")
     private String redisHost;
@@ -46,6 +52,9 @@ public class CacheConfig {
 
     @Value("${spring.data.redis.ssl.enabled:true}")
     private boolean redisSslEnabled;
+
+    @Value("${spring.data.redis.timeout:5s}")
+    private Duration redisCommandTimeout;
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
@@ -101,10 +110,10 @@ public class CacheConfig {
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(redisHost);
-        config.setPort(redisPort);
-        config.setUsername(redisUsername);
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
+        if (redisUsername != null && !redisUsername.isBlank()) {
+            config.setUsername(redisUsername);
+        }
         if (redisPassword != null && !redisPassword.isBlank()) {
             config.setPassword(redisPassword);
         }
@@ -113,6 +122,13 @@ public class CacheConfig {
         if (redisSslEnabled) {
             clientConfigBuilder.useSsl();
         }
+        clientConfigBuilder
+                .commandTimeout(redisCommandTimeout != null ? redisCommandTimeout : DEFAULT_COMMAND_TIMEOUT)
+                .shutdownTimeout(DEFAULT_SHUTDOWN_TIMEOUT)
+                .clientOptions(ClientOptions.builder()
+                        .autoReconnect(true)
+                        .build());
+
         LettuceClientConfiguration clientConfig = clientConfigBuilder.build();
 
         return new LettuceConnectionFactory(config, clientConfig);
@@ -122,11 +138,11 @@ public class CacheConfig {
     @Bean
     CommandLineRunner checkRedisConnection(RedisConnectionFactory connectionFactory) {
         return args -> {
-            try {
-                connectionFactory.getConnection().ping();
-                log.info("--- ¡CONEXIÓN A REDIS EXITOSA EN EL ARRANQUE! ---");
+            try (RedisConnection connection = connectionFactory.getConnection()) {
+                String pong = connection.ping();
+                log.info("Conexión Redis/Valkey verificada en el arranque: {}", pong);
             } catch (Exception e) {
-                log.error("--- ¡ERROR FATAL DE CONEXIÓN A REDIS EN EL ARRANQUE! ---", e);
+                log.error("No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.", e);
             }
         };
     }
