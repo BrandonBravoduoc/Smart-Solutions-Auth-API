@@ -1,3 +1,9 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.data.redis: DEBUG
+    io.lettuce.core: DEBUG
+
 server:
   port: ${SERVER_PORT:8081}
 
