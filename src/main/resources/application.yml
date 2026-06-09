@@ -8,6 +8,13 @@ spring:
   cache:
     type: ${CACHE_TYPE:none}
 
+  data:
+    redis:
+      host: ${REDIS_HOST:smart-solutions-cache-po4yvy.serverless.sae1.cache.amazonaws.com}
+      port: ${REDIS_PORT:6379}
+      ssl:
+        enabled: ${REDIS_SSL:true}
+
   datasource:
     url: ${DB_URL:jdbc:h2:mem:auth_db}
     driver-class-name: ${DB_DRIVER_CLASS_NAME:org.h2.Driver}
