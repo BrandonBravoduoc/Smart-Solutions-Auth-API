@@ -24,12 +24,28 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
     private static final Logger log = LoggerFactory.getLogger(CacheConfig.class);
+
+    @Value("${spring.data.redis.host}")
+    private String redisHost;
+
+    @Value("${spring.data.redis.port}")
+    private int redisPort;
+
+    @Value("${spring.data.redis.username}")
+    private String redisUsername;
+
+    @Value("${spring.data.redis.password:}")
+    private String redisPassword;
+
+    @Value("${spring.data.redis.ssl.enabled:true}")
+    private boolean redisSslEnabled;
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
@@ -86,15 +102,18 @@ public class CacheConfig {
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName("${REDIS_HOST:smart-solutions-cache-po4yvy.serverless.sae1.cache.amazonaws.com}");
-        config.setPort(6379);
-        config.setUsername("${REDIS_USERNAME:auth-api-user}");
-        config.setPassword("${REDIS_PASSWORD}");
+        config.setHostName(redisHost);
+        config.setPort(redisPort);
+        config.setUsername(redisUsername);
+        if (redisPassword != null && !redisPassword.isBlank()) {
+            config.setPassword(redisPassword);
+        }
 
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .useSsl() // Activa TLS
-                .disablePeerVerification() // Crucial: AWS Serverless a veces falla si esto no está desactivado
-                .build();
+        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration.builder();
+        if (redisSslEnabled) {
+            clientConfigBuilder.useSsl();
+        }
+        LettuceClientConfiguration clientConfig = clientConfigBuilder.build();
 
         return new LettuceConnectionFactory(config, clientConfig);
 
