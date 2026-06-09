@@ -13,7 +13,7 @@ spring:
       host: ${REDIS_HOST:smart-solutions-cache-po4yvy.serverless.sae1.cache.amazonaws.com}
       port: ${REDIS_PORT:6379}
       username: ${REDIS_USERNAME:auth-api-user}
-      password: ${REDIS_PASSWORD}
+      password: ${REDIS_PASSWORD:}
       ssl:
         enabled: ${REDIS_SSL:true}
       timeout: 10000ms
