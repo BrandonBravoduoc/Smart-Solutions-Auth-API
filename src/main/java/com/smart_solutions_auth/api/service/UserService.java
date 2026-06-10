@@ -130,8 +130,7 @@ public class UserService {
     }
 
     @CacheEvict(value = "users", key = "#userId")
-    public UserDTO.UpdateEmailResponse updateEmail(UserDTO.UpdateEmailRequest dto, HttpServletResponse response) {
-        Long userId = validations.getCurrentUserId();
+    public UserDTO.UpdateEmailResponse updateEmail(Long userId, UserDTO.UpdateEmailRequest dto, HttpServletResponse response) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
@@ -178,8 +177,7 @@ public class UserService {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
-    public boolean desactivateAccount(String password, HttpServletResponse response) {
-        Long userId = validations.getCurrentUserId();
+    public boolean desactivateAccount(Long userId, String password, HttpServletResponse response) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
@@ -204,9 +202,7 @@ public class UserService {
     }
 
     @Cacheable(value = "users", key = "#userId")
-    public UserDTO.Response profile(){
-
-        Long userId = validations.getCurrentUserId();
+    public UserDTO.Response profile(Long userId){
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
@@ -229,7 +225,7 @@ public class UserService {
                     .orElseThrow(() -> new RuntimeException("No se encontró el usuario con email: " + emailToFind));
 
             return processUpdate(user, dto);
-        }
+    }
 
     public UserDTO.Response updateByPhone(String phoneToFind, UserDTO.UpdateUserByAdmin dto) {
             UserContact contact = userContactRepository.findByPhoneNumber(phoneToFind)
@@ -239,7 +235,6 @@ public class UserService {
 
             return processUpdate(user, dto);
     }
-
 
     private UserDTO.Response processUpdate(User user, UserDTO.UpdateUserByAdmin dto) {
         UserContact contact = userContactRepository.findByUserId(user.getId())
