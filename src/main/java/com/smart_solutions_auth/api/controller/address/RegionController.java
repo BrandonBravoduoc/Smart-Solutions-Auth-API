@@ -42,8 +42,6 @@ public class RegionController {
         return regionService.findById(id);
     }
 
-    //dejo los preauthorize ya que se podrian duplicar muy facilmente los datos, 
-    //y no es necesario que un usuario normal pueda crear o modificar regiones o comunas.
     
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")

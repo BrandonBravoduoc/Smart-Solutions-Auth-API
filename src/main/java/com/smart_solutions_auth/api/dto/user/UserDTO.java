@@ -106,4 +106,11 @@ public class UserDTO {
         Long addressId
     ){}
 
+
+    //-------------------------------------------------------------------------------------------------------
+    
+    public record DeactivateRequest(
+        @NotBlank(message = "La contraseña es obligatoria para desactivar la cuenta.")
+        String password
+    ){}
 }
