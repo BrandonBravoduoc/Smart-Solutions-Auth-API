@@ -74,6 +74,7 @@ public class AuthService {
                 String newAccessToken = jwtService.generateToken(user);
                 ResponseCookie cookie = ResponseCookie.from("accessToken", newAccessToken)
                         .httpOnly(true)
+                        .secure(true)
                         .path("/")
                         .maxAge(3600)
                         .sameSite("None")

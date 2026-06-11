@@ -82,19 +82,19 @@ public class UserService {
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
             .httpOnly(true)
-            .secure(false)
+            .secure(true)
             .path("/")
             .maxAge(3600)
-            .sameSite("Strict")
+            .sameSite("None")
             .build();
 
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
             .httpOnly(true)
-            .secure(false)
+            .secure(true)
             .path("/api/v1/auth/refresh")
             .maxAge(604800)
-            .sameSite("Strict")
+            .sameSite("None")
             .build();
 
         
