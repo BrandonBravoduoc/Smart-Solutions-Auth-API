@@ -1,7 +1,8 @@
 package com.smart_solutions_auth.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,9 @@ public class UserContactService {
     @Autowired 
     private Validations validations;
 
-    // IMPORTANTE: este @CacheEvict borra la cache "users" usada por
-    // UserService.profile(userId). Sin esto, después de actualizar el
-    // contacto, el GET /profile sigue devolviendo los datos viejos desde
-    // Redis (incluyendo el teléfono viejo), lo que provoca que la siguiente
-    // edición falle con "El número de teléfono ya está registrado."
-    @CacheEvict(value = "users", allEntries = true)
+    @Autowired
+    private CacheManager cacheManager;
+
     public UserContactDTO.Response updateUserContact(UserContactDTO.UpdateRequest dto) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -44,6 +42,19 @@ public class UserContactService {
         contact.setPhoneNumber(dto.phone());
 
         userContactRepository.save(contact);
+
+        // Evict puntual de la entrada de este usuario en la cache "users".
+        // Solo borra UNA clave (DEL users::<userId>), evitando comandos
+        // de scan/flush que la ACL de Redis podria no permitir.
+        try {
+            Long userId = contact.getUser().getId();
+            Cache usersCache = cacheManager.getCache("users");
+            if (usersCache != null && userId != null) {
+                usersCache.evict(userId);
+            }
+        } catch (Exception ex) {
+            // Si Redis falla aca, no debe tumbar la actualizacion del perfil.
+        }
 
         return new UserContactDTO.Response(
             contact.getUser().getEmail(),
