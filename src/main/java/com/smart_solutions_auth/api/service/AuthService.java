@@ -39,18 +39,18 @@ public class AuthService {
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", token)
                 .httpOnly(true)
-                .secure(false) 
+                .secure(true) 
                 .path("/")
                 .maxAge(3600) 
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/api/v1/auth/refresh") 
                 .maxAge(604800) 
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
@@ -74,9 +74,10 @@ public class AuthService {
                 String newAccessToken = jwtService.generateToken(user);
                 ResponseCookie cookie = ResponseCookie.from("accessToken", newAccessToken)
                         .httpOnly(true)
+                        .secure(true)
                         .path("/")
                         .maxAge(3600)
-                        .sameSite("Strict")
+                        .sameSite("None")
                         .build();
                 response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
                 }

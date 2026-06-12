@@ -40,22 +40,22 @@ public class CacheConfig {
     private static final Duration DEFAULT_COMMAND_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration DEFAULT_SHUTDOWN_TIMEOUT = Duration.ofMillis(200);
 
-    @Value("${spring.data.redis.host}")
+    @Value("${spring.redis.host}")
     private String redisHost;
 
-    @Value("${spring.data.redis.port}")
+    @Value("${spring.redis.port}")
     private int redisPort;
 
-    @Value("${spring.data.redis.username}")
+    @Value("${spring.redis.username}")
     private String redisUsername;
 
-    @Value("${spring.data.redis.password:}")
+    @Value("${spring.redis.password:}")
     private String redisPassword;
 
-    @Value("${spring.data.redis.ssl.enabled:true}")
+    @Value("${spring.redis.ssl.enabled:true}")
     private boolean redisSslEnabled;
 
-    @Value("${spring.data.redis.timeout:5s}")
+    @Value("${spring.redis.timeout:5s}")
     private Duration redisCommandTimeout;
 
     @Bean
@@ -107,8 +107,8 @@ public class CacheConfig {
             @Override
             public void handleCacheEvictError(@NonNull RuntimeException exception, @NonNull Cache cache,
                     @NonNull Object key) {
-                log.error("Error crítico al borrar caché. Relanzando error para evitar inconsistencias.");
-                throw exception;
+                log.error("Redis caído al BORRAR caché. Info -> Tabla: {}, Llave: {}. Error: {}",
+                        cache.getName(), key, exception.getMessage());
             }
 
         };
