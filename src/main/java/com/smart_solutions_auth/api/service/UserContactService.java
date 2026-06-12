@@ -16,23 +16,29 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class UserContactService {
 
-    @Autowired
+    @Autowired 
     private UserContactRepository userContactRepository;
 
-    @Autowired
+    @Autowired 
     private Validations validations;
 
-    @CacheEvict(value = "users", key = "#root.target.validations.getCurrentUserId()")
+    // IMPORTANTE: este @CacheEvict borra la cache "users" usada por
+    // UserService.profile(userId). Sin esto, después de actualizar el
+    // contacto, el GET /profile sigue devolviendo los datos viejos desde
+    // Redis (incluyendo el teléfono viejo), lo que provoca que la siguiente
+    // edición falle con "El número de teléfono ya está registrado."
+    @CacheEvict(value = "users", allEntries = true)
     public UserContactDTO.Response updateUserContact(UserContactDTO.UpdateRequest dto) {
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         UserContact contact = userContactRepository.findByUserEmail(email)
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
 
-        if (!contact.getPhoneNumber().equals(dto.phone())) {
+        if(!contact.getPhoneNumber().equals(dto.phone())){
             validations.contactValidate(dto.phone());
         }
-
+        
         contact.setName(dto.name());
         contact.setLastName(dto.lastName());
         contact.setPhoneNumber(dto.phone());
@@ -40,10 +46,12 @@ public class UserContactService {
         userContactRepository.save(contact);
 
         return new UserContactDTO.Response(
-                contact.getUser().getEmail(),
-                contact.getName(),
-                contact.getLastName(),
-                contact.getPhoneNumber()
+            contact.getUser().getEmail(),
+            contact.getName(),
+            contact.getLastName(),
+            contact.getPhoneNumber()
         );
     }
+
+    
 }
