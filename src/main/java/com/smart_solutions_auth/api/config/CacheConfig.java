@@ -76,6 +76,7 @@ public class CacheConfig {
         cacheConfigurations.put("communes", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("addresses", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("roles", defaultCacheConfig.entryTtl(Duration.ofMinutes(10)));
+
         RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(
                 connectionFactory,
                 BatchStrategies.scan(1000));
