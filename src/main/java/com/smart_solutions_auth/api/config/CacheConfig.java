@@ -101,8 +101,9 @@ public class CacheConfig {
             @Override
             public void handleCacheEvictError(@NonNull RuntimeException exception, @NonNull Cache cache,
                     @NonNull Object key) {
-                log.error("Error crítico al borrar caché. Relanzando error para evitar inconsistencias.");
-                throw exception;
+                log.error("Redis caído al BORRAR caché. Info -> Tabla: {}, Llave: {}. Error: {}",
+                        cache.getName(), key, exception.getMessage());
+                // ya NO se relanza: si Redis falla, la operación en BD debe seguir adelante
             }
 
         };
