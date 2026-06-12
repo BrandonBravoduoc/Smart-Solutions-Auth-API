@@ -13,8 +13,10 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.SimpleCacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.BatchStrategies; 
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter; 
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -75,7 +77,11 @@ public class CacheConfig {
         cacheConfigurations.put("addresses", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("roles", defaultCacheConfig.entryTtl(Duration.ofMinutes(10)));
 
-        return RedisCacheManager.builder(connectionFactory)
+        RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(
+                connectionFactory,
+                BatchStrategies.scan(1000));
+
+        return RedisCacheManager.builder(cacheWriter)
                 .cacheDefaults(defaultCacheConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)
                 .build();
@@ -118,7 +124,8 @@ public class CacheConfig {
             config.setPassword(redisPassword);
         }
 
-        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration.builder();
+        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration
+                .builder();
         if (redisSslEnabled) {
             clientConfigBuilder.useSsl();
         }
@@ -142,7 +149,9 @@ public class CacheConfig {
                 String pong = connection.ping();
                 log.info("Conexión Redis/Valkey verificada en el arranque: {}", pong);
             } catch (Exception e) {
-                log.error("No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.", e);
+                log.error(
+                        "No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.",
+                        e);
             }
         };
     }
