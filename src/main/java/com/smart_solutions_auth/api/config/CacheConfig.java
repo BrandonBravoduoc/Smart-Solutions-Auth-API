@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
@@ -13,8 +14,10 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.SimpleCacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.BatchStrategies;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -25,7 +28,6 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.beans.factory.annotation.Value;
 
 import io.lettuce.core.ClientOptions;
 
@@ -59,6 +61,10 @@ public class CacheConfig {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 
+        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(
+                connectionFactory,
+                BatchStrategies.scan(1000));
+
         GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
 
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
@@ -67,15 +73,16 @@ public class CacheConfig {
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer));
+                
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-
         cacheConfigurations.put("users", defaultCacheConfig.entryTtl(Duration.ofMinutes(15)));
         cacheConfigurations.put("regions", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("communes", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("addresses", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("roles", defaultCacheConfig.entryTtl(Duration.ofMinutes(10)));
 
-        return RedisCacheManager.builder(connectionFactory)
+
+        return RedisCacheManager.builder(redisCacheWriter)
                 .cacheDefaults(defaultCacheConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)
                 .build();
@@ -104,7 +111,6 @@ public class CacheConfig {
                 log.error("Redis caído al BORRAR caché. Info -> Tabla: {}, Llave: {}. Error: {}",
                         cache.getName(), key, exception.getMessage());
             }
-
         };
     }
 
@@ -118,7 +124,8 @@ public class CacheConfig {
             config.setPassword(redisPassword);
         }
 
-        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration.builder();
+        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration
+                .builder();
         if (redisSslEnabled) {
             clientConfigBuilder.useSsl();
         }
@@ -132,7 +139,6 @@ public class CacheConfig {
         LettuceClientConfiguration clientConfig = clientConfigBuilder.build();
 
         return new LettuceConnectionFactory(config, clientConfig);
-
     }
 
     @Bean
@@ -142,7 +148,9 @@ public class CacheConfig {
                 String pong = connection.ping();
                 log.info("Conexión Redis/Valkey verificada en el arranque: {}", pong);
             } catch (Exception e) {
-                log.error("No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.", e);
+                log.error(
+                        "No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.",
+                        e);
             }
         };
     }
