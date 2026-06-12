@@ -8,9 +8,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 @SpringBootTest
 class ApiApplicationTests {
 
-	@MockBean
-	private RedisConnectionFactory redisConnectionFactory;
-	
+
+
 	@Test
 	void contextLoads() {
 	}
