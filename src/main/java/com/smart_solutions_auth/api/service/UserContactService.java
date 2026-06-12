@@ -43,9 +43,6 @@ public class UserContactService {
 
         userContactRepository.save(contact);
 
-        // Evict puntual de la entrada de este usuario en la cache "users".
-        // Solo borra UNA clave (DEL users::<userId>), evitando comandos
-        // de scan/flush que la ACL de Redis podria no permitir.
         try {
             Long userId = contact.getUser().getId();
             Cache usersCache = cacheManager.getCache("users");
@@ -53,7 +50,6 @@ public class UserContactService {
                 usersCache.evict(userId);
             }
         } catch (Exception ex) {
-            // Si Redis falla aca, no debe tumbar la actualizacion del perfil.
         }
 
         return new UserContactDTO.Response(

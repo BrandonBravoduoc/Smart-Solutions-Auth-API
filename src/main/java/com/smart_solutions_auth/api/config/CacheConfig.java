@@ -101,10 +101,6 @@ public class CacheConfig {
             @Override
             public void handleCacheEvictError(@NonNull RuntimeException exception, @NonNull Cache cache,
                     @NonNull Object key) {
-                // IMPORTANTE: ya NO se relanza la excepción.
-                // Si Redis falla al borrar la cache, la operación sobre la BD
-                // (crear/editar región, comuna, sucursal, perfil, etc.) debe
-                // continuar igual. Antes esto rompía esas operaciones con un 400.
                 log.error("Redis caído al BORRAR caché. Info -> Tabla: {}, Llave: {}. Error: {}",
                         cache.getName(), key, exception.getMessage());
             }
