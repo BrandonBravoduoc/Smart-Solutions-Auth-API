@@ -13,10 +13,8 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.SimpleCacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.BatchStrategies; // Importación añadida
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.cache.RedisCacheWriter; // Importación añadida
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -40,22 +38,22 @@ public class CacheConfig {
     private static final Duration DEFAULT_COMMAND_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration DEFAULT_SHUTDOWN_TIMEOUT = Duration.ofMillis(200);
 
-    @Value("${spring.data.redis.host}")
+    @Value("${spring.redis.host}")
     private String redisHost;
 
-    @Value("${spring.data.redis.port}")
+    @Value("${spring.redis.port}")
     private int redisPort;
 
-    @Value("${spring.data.redis.username}")
+    @Value("${spring.redis.username}")
     private String redisUsername;
 
-    @Value("${spring.data.redis.password:}")
+    @Value("${spring.redis.password:}")
     private String redisPassword;
 
-    @Value("${spring.data.redis.ssl.enabled:true}")
+    @Value("${spring.redis.ssl.enabled:true}")
     private boolean redisSslEnabled;
 
-    @Value("${spring.data.redis.timeout:5s}")
+    @Value("${spring.redis.timeout:5s}")
     private Duration redisCommandTimeout;
 
     @Bean
@@ -77,10 +75,7 @@ public class CacheConfig {
         cacheConfigurations.put("addresses", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("roles", defaultCacheConfig.entryTtl(Duration.ofMinutes(10)));
 
-        RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(
-                connectionFactory,
-                BatchStrategies.scan(1000));
-        return RedisCacheManager.builder(cacheWriter)
+        return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultCacheConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)
                 .build();
@@ -106,8 +101,8 @@ public class CacheConfig {
             @Override
             public void handleCacheEvictError(@NonNull RuntimeException exception, @NonNull Cache cache,
                     @NonNull Object key) {
-                log.error("Error crítico al borrar caché. Relanzando error para evitar inconsistencias.");
-                throw exception;
+                log.error("Redis caído al BORRAR caché. Info -> Tabla: {}, Llave: {}. Error: {}",
+                        cache.getName(), key, exception.getMessage());
             }
 
         };
@@ -123,8 +118,7 @@ public class CacheConfig {
             config.setPassword(redisPassword);
         }
 
-        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration
-                .builder();
+        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder = LettuceClientConfiguration.builder();
         if (redisSslEnabled) {
             clientConfigBuilder.useSsl();
         }
@@ -148,9 +142,7 @@ public class CacheConfig {
                 String pong = connection.ping();
                 log.info("Conexión Redis/Valkey verificada en el arranque: {}", pong);
             } catch (Exception e) {
-                log.error(
-                        "No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.",
-                        e);
+                log.error("No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.", e);
             }
         };
     }

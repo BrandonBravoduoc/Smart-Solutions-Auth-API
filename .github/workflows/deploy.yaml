@@ -20,10 +20,10 @@ jobs:
         java-version: '17'
         cache: maven
 
-    - name: Construir proyecto Maven
+    - name: Ejecutar pruebas Maven
       run: |
         chmod +x ./mvnw
-        ./mvnw clean package -DskipTests
+        ./mvnw test
 
     - name: Configurar credenciales de AWS
       uses: aws-actions/configure-aws-credentials@v4
