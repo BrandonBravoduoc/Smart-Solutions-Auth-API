@@ -13,8 +13,10 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.SimpleCacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.BatchStrategies; // Importación añadida
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter; // Importación añadida
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -75,7 +77,10 @@ public class CacheConfig {
         cacheConfigurations.put("addresses", defaultCacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("roles", defaultCacheConfig.entryTtl(Duration.ofMinutes(10)));
 
-        return RedisCacheManager.builder(connectionFactory)
+        RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(
+                connectionFactory,
+                BatchStrategies.scan(1000));
+        return RedisCacheManager.builder(cacheWriter)
                 .cacheDefaults(defaultCacheConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)
                 .build();
