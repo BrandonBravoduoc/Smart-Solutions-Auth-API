@@ -146,7 +146,7 @@ public class CacheConfig {
         return args -> {
             try (RedisConnection connection = connectionFactory.getConnection()) {
                 String pong = connection.ping();
-                log.info("Conexión Redis/Valkey verificada en el arranque: {}", pong);
+                log.info("Conexión Redis/Valkey verificada en el arranque :D {}", pong);
             } catch (Exception e) {
                 log.error(
                         "No se pudo verificar la conexión inicial a Redis/Valkey. Revisa host, puerto, TLS, usuario ACL y contraseña.",
