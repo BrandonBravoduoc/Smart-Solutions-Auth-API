@@ -43,7 +43,8 @@ public class UserDTO {
         String name,
         String lastName,
         String phone,
-        String sucursalName
+        String sucursalName,
+        String role 
     ){}
 
     //-------------------------------------------------------------------------------------------------------

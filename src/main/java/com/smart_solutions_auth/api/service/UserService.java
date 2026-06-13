@@ -1,7 +1,5 @@
 package com.smart_solutions_auth.api.service;
 
-
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +23,18 @@ import com.smart_solutions_auth.api.util.Validations;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
-
 @Service
 @Transactional
 public class UserService {
- 
+
     @Autowired
     private UserContactRepository userContactRepository;
 
     @Autowired
-    private  UserRepository userRepository;
-    
+    private UserRepository userRepository;
+
     @Autowired
-    private  PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AddressRepository addressRepository;
@@ -48,14 +45,14 @@ public class UserService {
     @Autowired
     private JwtService jwtService;
 
-    public UserDTO.Response userRegister(UserDTO.RegisterRequest dto, HttpServletResponse response){
-        
+    public UserDTO.Response userRegister(UserDTO.RegisterRequest dto, HttpServletResponse response) {
+
         String cleanEmail = validations.emailValidate(dto.email());
 
         validations.passwordValidate(dto.password(), dto.confirmPassword());
         validations.contactValidate(dto.phone());
-        
-        UserRole role =  validations.roleVerification("CLIENTE");
+
+        UserRole role = validations.roleVerification("CLIENTE");
 
         User user = new User();
         user.setEmail(cleanEmail);
@@ -64,7 +61,7 @@ public class UserService {
         user.setAsset(true);
 
         Address sucursal = addressRepository.findById(dto.addressId())
-            .orElseThrow(() -> new RuntimeException("Sucursal no encontrada."));
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada."));
 
         User userSaved = userRepository.save(user);
 
@@ -81,33 +78,31 @@ public class UserService {
         String refreshToken = jwtService.generateRefreshToken(userSaved);
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(3600)
-            .sameSite("None")
-            .build();
-
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(3600)
+                .sameSite("None")
+                .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
-            .httpOnly(true)
-            .secure(true)
-            .path("/api/v1/auth/refresh")
-            .maxAge(604800)
-            .sameSite("None")
-            .build();
+                .httpOnly(true)
+                .secure(true)
+                .path("/api/v1/auth/refresh")
+                .maxAge(604800)
+                .sameSite("None")
+                .build();
 
-        
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-
         return new UserDTO.Response(
-            user.getEmail(),
-            userContact.getName(),
-            userContact.getLastName(),
-            userContact.getPhoneNumber(),
-            sucursal.getSucursalName()
+                user.getEmail(),
+                userContact.getName(),
+                userContact.getLastName(),
+                userContact.getPhoneNumber(),
+                sucursal.getSucursalName(), // <-- Aquí faltaba una coma
+                user.getUserRole().getNameRole() // <-- Rol añadido
         );
     }
 
@@ -115,8 +110,8 @@ public class UserService {
     public UserDTO.ChangePasswordResponse changePassword(UserDTO.ChangePasswordRequest dto) {
         Long userId = validations.getCurrentUserId();
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
-        
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+
         validations.passwordValidate(dto.newPassword(), dto.confirmNewPassword());
 
         if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
@@ -130,9 +125,10 @@ public class UserService {
     }
 
     @CacheEvict(value = "users", key = "#userId")
-    public UserDTO.UpdateEmailResponse updateEmail(Long userId, UserDTO.UpdateEmailRequest dto, HttpServletResponse response) {
+    public UserDTO.UpdateEmailResponse updateEmail(Long userId, UserDTO.UpdateEmailRequest dto,
+            HttpServletResponse response) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new RuntimeException("Contraseña incorrecta.");
@@ -149,12 +145,12 @@ public class UserService {
         String newToken = jwtService.generateToken(user);
         ResponseCookie cookie = ResponseCookie.from("accessToken", newToken)
                 .httpOnly(true)
-                .secure(false) 
+                .secure(false)
                 .path("/")
                 .maxAge(3600)
                 .sameSite("Strict")
                 .build();
-        
+
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
 
         return new UserDTO.UpdateEmailResponse(user.getEmail(), "Correo actualizado exitosamente.");
@@ -169,7 +165,7 @@ public class UserService {
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .path("/api/v1/auth/refresh")  
+                .path("/api/v1/auth/refresh")
                 .maxAge(0)
                 .build();
 
@@ -181,7 +177,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
-        if(!passwordEncoder.matches(password, user.getPassword())){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Contraseña incorrecta.");
         }
 
@@ -190,50 +186,50 @@ public class UserService {
 
         ResponseCookie deleteCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(false) 
+                .secure(false)
                 .path("/")
-                .maxAge(0) 
-                .sameSite("Strict") 
+                .maxAge(0)
+                .sameSite("Strict")
                 .build();
-        
+
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, deleteCookie.toString());
-        
+
         return true;
     }
 
     @Cacheable(value = "users", key = "#userId")
-    public UserDTO.Response profile(Long userId){
+    public UserDTO.Response profile(Long userId) {
 
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
         UserContact userContact = userContactRepository.findByUserId(userId)
-            .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
-        
-     
+                .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
+
         return new UserDTO.Response(
-            user.getEmail(),
-            userContact.getName(),
-            userContact.getLastName(),
-            userContact.getPhoneNumber(),
-            userContact.getUserAddress().getSucursalName()
+                user.getEmail(),
+                userContact.getName(),
+                userContact.getLastName(),
+                userContact.getPhoneNumber(),
+                userContact.getUserAddress().getSucursalName(),
+                user.getUserRole().getNameRole() // <-- Rol añadido
         );
     }
 
     public UserDTO.Response updateByEmail(String emailToFind, UserDTO.UpdateUserByAdmin dto) {
-            User user = userRepository.findByEmail(emailToFind)
-                    .orElseThrow(() -> new RuntimeException("No se encontró el usuario con email: " + emailToFind));
+        User user = userRepository.findByEmail(emailToFind)
+                .orElseThrow(() -> new RuntimeException("No se encontró el usuario con email: " + emailToFind));
 
-            return processUpdate(user, dto);
+        return processUpdate(user, dto);
     }
 
     public UserDTO.Response updateByPhone(String phoneToFind, UserDTO.UpdateUserByAdmin dto) {
-            UserContact contact = userContactRepository.findByPhoneNumber(phoneToFind)
-                    .orElseThrow(() -> new RuntimeException("No se encontró el usuario con teléfono: " + phoneToFind));
-            
-            User user = contact.getUser();
+        UserContact contact = userContactRepository.findByPhoneNumber(phoneToFind)
+                .orElseThrow(() -> new RuntimeException("No se encontró el usuario con teléfono: " + phoneToFind));
 
-            return processUpdate(user, dto);
+        User user = contact.getUser();
+
+        return processUpdate(user, dto);
     }
 
     private UserDTO.Response processUpdate(User user, UserDTO.UpdateUserByAdmin dto) {
@@ -248,8 +244,10 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(dto.password()));
         }
 
-        if (dto.name() != null && !dto.name().isBlank()) contact.setName(dto.name());
-        if (dto.lastName() != null && !dto.lastName().isBlank()) contact.setLastName(dto.lastName());
+        if (dto.name() != null && !dto.name().isBlank())
+            contact.setName(dto.name());
+        if (dto.lastName() != null && !dto.lastName().isBlank())
+            contact.setLastName(dto.lastName());
 
         if (dto.phone() != null && !dto.phone().isBlank() && !dto.phone().equals(contact.getPhoneNumber())) {
             validations.contactValidate(dto.phone());
@@ -258,7 +256,7 @@ public class UserService {
 
         if (dto.addressId() != null) {
             Address newBranch = addressRepository.findById(dto.addressId())
-                .orElseThrow(() -> new RuntimeException("Nueva sucursal no encontrada."));
+                    .orElseThrow(() -> new RuntimeException("Nueva sucursal no encontrada."));
             contact.setUserAddress(newBranch);
         }
 
@@ -270,12 +268,11 @@ public class UserService {
                 contact.getName(),
                 contact.getLastName(),
                 contact.getPhoneNumber(),
-                contact.getUserAddress().getSucursalName()
-
+                contact.getUserAddress().getSucursalName(),
+                user.getUserRole().getNameRole() // <-- Rol añadido
         );
     }
 
-    
     public UserDTO.Response getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
@@ -283,45 +280,48 @@ public class UserService {
         UserContact contact = userContactRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Detalles de contacto no encontrados para este usuario."));
 
-
         return new UserDTO.Response(
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
                 contact.getPhoneNumber(),
-                contact.getUserAddress().getSucursalName()
-                
+                contact.getUserAddress().getSucursalName(),
+                user.getUserRole().getNameRole() // <-- Rol añadido
         );
     }
 
     public UserDTO.Response getUserByPhone(String phoneNumber) {
         UserContact contact = userContactRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("No existe un usuario con el teléfono: " + phoneNumber));
-        
-        User user = contact.getUser(); 
+
+        User user = contact.getUser();
 
         return new UserDTO.Response(
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
                 contact.getPhoneNumber(),
-                contact.getUserAddress().getSucursalName()
+                contact.getUserAddress().getSucursalName(),
+                user.getUserRole().getNameRole() // <-- Rol añadido
         );
     }
 
     public List<UserDTO.Response> listUsers() {
         return userRepository.findAll().stream()
-            .map(user -> {
-                UserContact contact = user.getUserContact(); 
-                return new UserDTO.Response(
-                    user.getEmail(),
-                    contact != null ? contact.getName() : "Nombre no encontrado.",
-                    contact != null ? contact.getLastName() : "Apellido no encontrado.",
-                    contact != null ? contact.getPhoneNumber() : "Telefóno no encontrado.",
-                    contact != null ? contact.getUserAddress().getSucursalName() : "Sin sucursal registrada."
-                );
-            })
-            .toList();
+                .map(user -> {
+                    UserContact contact = user.getUserContact();
+                    return new UserDTO.Response(
+                            user.getEmail(),
+                            contact != null ? contact.getName() : "Nombre no encontrado.",
+                            contact != null ? contact.getLastName() : "Apellido no encontrado.",
+                            contact != null ? contact.getPhoneNumber() : "Telefóno no encontrado.",
+                            contact != null && contact.getUserAddress() != null
+                                    ? contact.getUserAddress().getSucursalName()
+                                    : "Sin sucursal registrada.",
+                            user.getUserRole() != null ? user.getUserRole().getNameRole() : "Sin rol" // <-- Rol añadido
+                    );
+                })
+                .toList();
     }
 
 }
