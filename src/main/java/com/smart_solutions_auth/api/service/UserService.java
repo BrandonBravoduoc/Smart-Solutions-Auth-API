@@ -160,14 +160,18 @@ public class UserService {
     public void logout(HttpServletResponse response) {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
+                .sameSite("None")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
+                .secure(true)
                 .path("/api/v1/auth/refresh")
                 .maxAge(0)
+                .sameSite("None")
                 .build();
 
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, accessCookie.toString());
