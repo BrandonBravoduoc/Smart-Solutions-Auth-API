@@ -97,12 +97,13 @@ public class UserService {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         return new UserDTO.Response(
+                userSaved.getId(),
                 user.getEmail(),
                 userContact.getName(),
                 userContact.getLastName(),
                 userContact.getPhoneNumber(),
-                sucursal.getSucursalName(), // <-- Aquí faltaba una coma
-                user.getUserRole().getNameRole() // <-- Rol añadido
+                sucursal.getSucursalName(),
+                user.getUserRole().getNameRole()
         );
     }
 
@@ -207,12 +208,13 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Información de contacto no encontrada."));
 
         return new UserDTO.Response(
+                user.getId(),
                 user.getEmail(),
                 userContact.getName(),
                 userContact.getLastName(),
                 userContact.getPhoneNumber(),
                 userContact.getUserAddress().getSucursalName(),
-                user.getUserRole().getNameRole() // <-- Rol añadido
+                user.getUserRole().getNameRole()
         );
     }
 
@@ -264,12 +266,13 @@ public class UserService {
         userContactRepository.save(contact);
 
         return new UserDTO.Response(
+                user.getId(),
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
                 contact.getPhoneNumber(),
                 contact.getUserAddress().getSucursalName(),
-                user.getUserRole().getNameRole() // <-- Rol añadido
+                user.getUserRole().getNameRole()
         );
     }
 
@@ -281,12 +284,13 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Detalles de contacto no encontrados para este usuario."));
 
         return new UserDTO.Response(
+                user.getId(),
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
                 contact.getPhoneNumber(),
                 contact.getUserAddress().getSucursalName(),
-                user.getUserRole().getNameRole() // <-- Rol añadido
+                user.getUserRole().getNameRole()
         );
     }
 
@@ -297,12 +301,13 @@ public class UserService {
         User user = contact.getUser();
 
         return new UserDTO.Response(
+                user.getId(),
                 user.getEmail(),
                 contact.getName(),
                 contact.getLastName(),
                 contact.getPhoneNumber(),
                 contact.getUserAddress().getSucursalName(),
-                user.getUserRole().getNameRole() // <-- Rol añadido
+                user.getUserRole().getNameRole()
         );
     }
 
@@ -311,6 +316,7 @@ public class UserService {
                 .map(user -> {
                     UserContact contact = user.getUserContact();
                     return new UserDTO.Response(
+                            user.getId(),
                             user.getEmail(),
                             contact != null ? contact.getName() : "Nombre no encontrado.",
                             contact != null ? contact.getLastName() : "Apellido no encontrado.",
@@ -318,7 +324,7 @@ public class UserService {
                             contact != null && contact.getUserAddress() != null
                                     ? contact.getUserAddress().getSucursalName()
                                     : "Sin sucursal registrada.",
-                            user.getUserRole() != null ? user.getUserRole().getNameRole() : "Sin rol" // <-- Rol añadido
+                            user.getUserRole() != null ? user.getUserRole().getNameRole() : "Sin rol"
                     );
                 })
                 .toList();

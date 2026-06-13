@@ -70,18 +70,20 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if (jwtService.isTokenValid(refreshToken)) {
-                String newAccessToken = jwtService.generateToken(user);
-                ResponseCookie cookie = ResponseCookie.from("accessToken", newAccessToken)
-                        .httpOnly(true)
-                        .secure(true)
-                        .path("/")
-                        .maxAge(3600)
-                        .sameSite("None")
-                        .build();
-                response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
-                }
+        if (!jwtService.isTokenValid(refreshToken)) {
+            throw new RuntimeException("Refresh token inválido o expirado.");
         }
+
+        String newAccessToken = jwtService.generateToken(user);
+        ResponseCookie cookie = ResponseCookie.from("accessToken", newAccessToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(3600)
+                .sameSite("None")
+                .build();
+        response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
+    }
 }
     
 
