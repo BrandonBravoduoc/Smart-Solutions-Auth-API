@@ -39,12 +39,13 @@ public class UserDTO {
     ){}
 
     public record Response(
+        Long id,
         String email,
         String name,
         String lastName,
         String phone,
         String sucursalName,
-        String role 
+        String role
     ){}
 
     //-------------------------------------------------------------------------------------------------------
