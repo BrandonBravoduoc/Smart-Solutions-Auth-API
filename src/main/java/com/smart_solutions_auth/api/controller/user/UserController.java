@@ -52,6 +52,12 @@ public class UserController {
         return ResponseEntity.ok(updatedContact);
     }
 
+    @PatchMapping("/password")
+    public ResponseEntity<UserDTO.ChangePasswordResponse> changePassword(
+            @Valid @RequestBody UserDTO.ChangePasswordRequest request) {
+        return ResponseEntity.ok(userService.changePassword(request));
+    }
+
     @PatchMapping("/email")
         public ResponseEntity<UserDTO.UpdateEmailResponse> updateEmail(
                 @Valid @RequestBody UserDTO.UpdateEmailRequest request,
