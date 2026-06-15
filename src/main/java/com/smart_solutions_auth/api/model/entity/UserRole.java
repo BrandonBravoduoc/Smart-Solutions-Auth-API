@@ -1,4 +1,6 @@
-package com.smart_solutions_auth.api.model;
+package com.smart_solutions_auth.api.model.entity;
+
+import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRole {
+public class UserRole implements Serializable{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

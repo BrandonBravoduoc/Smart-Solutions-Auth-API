@@ -1,21 +1,34 @@
+logging:
+  level:
+    root: INFO
+
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 spring:
-  application:
-    name: auth-service
-  
+  cache:
+    type: redis
+  redis:
+    host: ${REDIS_HOST:smart-solutions-cache-po4yvy.serverless.sae1.cache.amazonaws.com}
+    port: ${REDIS_PORT:6379}
+    username: ${REDIS_USERNAME:auth-api-user}
+    password: ${REDIS_PASSWORD:}
+    ssl:
+      enabled: ${REDIS_SSL:true}
+    timeout: ${REDIS_TIMEOUT:5s}
+    connect-timeout: ${REDIS_CONNECT_TIMEOUT:10s}
+
   datasource:
-    url: jdbc:h2:mem:auth_db
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
+    url: ${DB_URL:jdbc:h2:mem:auth_db}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:password}
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
 
   h2:
     console:
@@ -29,6 +42,6 @@ springdoc:
     displayRequestDuration: true
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: 3600000
-  refresh-expiration: 604800000
+  secret: ${JWT_SECRET:dev-secret-change-me}
+  expiration: ${JWT_EXPIRATION:3600000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}

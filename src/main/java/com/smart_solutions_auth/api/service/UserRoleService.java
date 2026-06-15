@@ -3,10 +3,12 @@ package com.smart_solutions_auth.api.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.api.dto.user.UserRoleDTO;
-import com.smart_solutions_auth.api.model.UserRole;
+import com.smart_solutions_auth.api.model.entity.UserRole;
 import com.smart_solutions_auth.api.repository.UserRoleRepository;
 import com.smart_solutions_auth.api.util.Validations;
 
@@ -22,6 +24,7 @@ public class UserRoleService {
     @Autowired
     private Validations validations;
     
+    @CacheEvict(value = "roles", allEntries = true)
     public UserRoleDTO.Response createRole(UserRoleDTO.CreateRoleRequest dto){
 
         validations.checkRole(dto.nameRole());
@@ -36,6 +39,7 @@ public class UserRoleService {
         );
     }
 
+    @CacheEvict(value = "roles", allEntries = true)
     public UserRoleDTO.Response updateRole(Long id, String nameRole) {
         UserRole role = userRoleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado."));
@@ -54,6 +58,7 @@ public class UserRoleService {
         );
     }
 
+    @Cacheable(value = "roles")
     public List<UserRoleDTO.Response> listRoles(){
         return userRoleRepository.findAll().stream()
             .map(userRole -> new UserRoleDTO.Response(
@@ -63,13 +68,11 @@ public class UserRoleService {
             .toList();
     }
 
+    @CacheEvict(value = "roles", allEntries = true)
     public void deleteRolByName(String nameRole){
         UserRole role = userRoleRepository.findByNameRole(nameRole.toUpperCase().trim())
             .orElseThrow(() -> new RuntimeException("El rol "+ nameRole + " no fue encontrado."));
         
         userRoleRepository.delete(role);
     }
-
-
-
 }

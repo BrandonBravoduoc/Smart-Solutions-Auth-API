@@ -36,11 +36,15 @@ public class GlobalExceptionHandler {
             throw ex; 
         }
 
+        Throwable cause = ex;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+
         Map<String, Object> errorDetails = new HashMap<>();
-        
         errorDetails.put("timestamp", LocalDateTime.now());
         errorDetails.put("status", HttpStatus.BAD_REQUEST.value());
-        errorDetails.put("message", ex.getMessage()); 
+        errorDetails.put("message", cause.getMessage());
         errorDetails.put("path", "Check your request details");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);

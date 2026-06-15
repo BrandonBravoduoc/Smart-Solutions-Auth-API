@@ -1,11 +1,13 @@
 package com.smart_solutions_auth.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.smart_solutions_auth.api.dto.user.UserContactDTO;
-import com.smart_solutions_auth.api.model.UserContact;
+import com.smart_solutions_auth.api.model.entity.UserContact;
 import com.smart_solutions_auth.api.repository.UserContactRepository;
 import com.smart_solutions_auth.api.util.Validations;
 
@@ -20,7 +22,10 @@ public class UserContactService {
 
     @Autowired 
     private Validations validations;
-    
+
+    @Autowired
+    private CacheManager cacheManager;
+
     public UserContactDTO.Response updateUserContact(UserContactDTO.UpdateRequest dto) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -37,6 +42,15 @@ public class UserContactService {
         contact.setPhoneNumber(dto.phone());
 
         userContactRepository.save(contact);
+
+        try {
+            Long userId = contact.getUser().getId();
+            Cache usersCache = cacheManager.getCache("users");
+            if (usersCache != null && userId != null) {
+                usersCache.evict(userId);
+            }
+        } catch (Exception ex) {
+        }
 
         return new UserContactDTO.Response(
             contact.getUser().getEmail(),
