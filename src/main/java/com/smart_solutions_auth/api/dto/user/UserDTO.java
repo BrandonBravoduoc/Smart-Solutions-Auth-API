@@ -4,16 +4,18 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class UserDTO {
 
     public record RegisterRequest(
         @NotBlank(message = "El email es obligatorio.")
+        @Size(max = 100, message = "El correo no puede superar los 100 caracteres.")
         @Email(message = "Formato de correo inválido.")
         String email,
 
         @NotBlank(message = "La contraseña es obligatoria.")
-        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", 
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
                  message = "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número")
         String password,
 
@@ -21,15 +23,15 @@ public class UserDTO {
         String confirmPassword,
 
         @NotBlank(message = "El nombre es obligatorio.")
-        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑüÜ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String name,
 
         @NotBlank(message = "El apellido es obligatorio.")
-        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑüÜ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String lastName,
 
         @NotBlank(message = "El teléfono es obligatorio.")
-        @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe contener exactamente 9 dígitos sin espacios ni caracteres especiales.")
+        @Pattern(regexp = "^[92]\\d{8}$", message = "El teléfono debe tener 9 dígitos y comenzar con 9 o 2.")
         String phone,
 
         @NotNull(message ="Debe seleccionar una suscursal.")
@@ -73,6 +75,7 @@ public class UserDTO {
 
     public record UpdateEmailRequest(
         @NotBlank(message = "El email es obligatorio.")
+        @Size(max = 100, message = "El correo no puede superar los 100 caracteres.")
         @Email(message = "Formato de correo inválido.")
         String newEmail,
 
@@ -92,18 +95,19 @@ public class UserDTO {
 
     public record UpdateUserByAdmin(
         String currentEmail,
+        @Size(max = 100, message = "El correo no puede superar los 100 caracteres.")
         @Email(message = "Formato de correo inválido.")
         String email,
 
-        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", 
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
                  message = "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número")
         String password,
-        
-        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
+
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑüÜ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String name,
-        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑüÜ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String lastName,
-        @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe contener exactamente 9 dígitos sin espacios ni caracteres especiales.")
+        @Pattern(regexp = "^[92]\\d{8}$", message = "El teléfono debe tener 9 dígitos y comenzar con 9 o 2.")
         String phone,
         Long addressId
     ){}

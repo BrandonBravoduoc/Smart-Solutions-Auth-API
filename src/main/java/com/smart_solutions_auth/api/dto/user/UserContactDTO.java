@@ -5,11 +5,11 @@ import jakarta.validation.constraints.Pattern;
 public class UserContactDTO {
     
     public record UpdateRequest(
-        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑüÜ\\s]{2,50}$", message = "El nombre solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String name,
-        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
+        @Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑüÜ\\s]{2,50}$", message = "El apellido solo puede contener letras y espacios, sin números, y debe tener entre 2 y 50 caracteres.")
         String lastName,
-        @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe contener exactamente 9 dígitos sin espacios ni caracteres especiales.")
+        @Pattern(regexp = "^[92]\\d{8}$", message = "El teléfono debe tener 9 dígitos y comenzar con 9 o 2.")
         String phone
     ){}
 
