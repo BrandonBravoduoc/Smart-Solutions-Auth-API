@@ -9,31 +9,26 @@ spring:
   cache:
     type: redis
   redis:
-    host: ${REDIS_HOST:smart-solutions-cache-po4yvy.serverless.sae1.cache.amazonaws.com}
+    host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
-    username: ${REDIS_USERNAME:auth-api-user}
+    username: ${REDIS_USERNAME:}
     password: ${REDIS_PASSWORD:}
     ssl:
-      enabled: ${REDIS_SSL:true}
+      enabled: ${REDIS_SSL:false}
     timeout: ${REDIS_TIMEOUT:5s}
     connect-timeout: ${REDIS_CONNECT_TIMEOUT:10s}
 
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:auth_db}
-    driver-class-name: ${DB_DRIVER_CLASS_NAME:org.h2.Driver}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:password}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/auth_db}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME:org.postgresql.Driver}
+    username: ${DB_USERNAME:auth_user}
+    password: ${DB_PASSWORD:auth_pass}
 
   jpa:
-    database-platform: ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
     show-sql: ${SHOW_SQL:true}
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
 springdoc:
   swagger-ui:
@@ -45,3 +40,10 @@ jwt:
   secret: ${JWT_SECRET:dev-secret-change-me}
   expiration: ${JWT_EXPIRATION:3600000}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:4200}
+
+cookie:
+  secure: ${COOKIE_SECURE:false}
+  same-site: ${COOKIE_SAME_SITE:Lax}
