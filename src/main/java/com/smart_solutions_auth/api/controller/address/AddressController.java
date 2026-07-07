@@ -40,8 +40,10 @@ public class AddressController {
         return addressService.findById(id);
     }
 
+    // Un cliente puede proponer una nueva sucursal (solo sobre una comuna/región ya
+    // existente, nunca crear la comuna o región); editar/eliminar sigue siendo solo admin.
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CLIENTE')")
     public ResponseEntity<AddressDTO.Response> create(@RequestBody AddressDTO.CreateRequest dto) {
         AddressDTO.Response created = addressService.create(dto);
         return ResponseEntity.status(201).body(created);

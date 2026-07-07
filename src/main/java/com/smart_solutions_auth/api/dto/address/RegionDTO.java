@@ -27,7 +27,13 @@ public class RegionDTO {
 	@Schema(name = "RegionResponse")
 	public record Response(
 		Long id,
-		String regionName
+		String regionName,
+		boolean active
+	){}
+
+	@Schema(name = "RegionStatusRequest")
+	public record StatusRequest(
+		boolean active
 	){}
 
 }

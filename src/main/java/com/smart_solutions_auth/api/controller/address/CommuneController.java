@@ -1,14 +1,10 @@
 package com.smart_solutions_auth.api.controller.address;
 
-import java.net.URI;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +16,10 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.smart_solutions_auth.api.model.cache.CommuneCache;
 
-
+/**
+ * Las comunas se precargan (DataInitializer); no se crean ni se eliminan por API.
+ * El administrador solo puede editar el nombre/región o activar/desactivar.
+ */
 @RestController
 @RequestMapping("/api/v1/communes")
 public class CommuneController {
@@ -28,7 +27,7 @@ public class CommuneController {
     private final CommuneService communeService;
 
     public CommuneController(CommuneService communeService) {
-        
+
         this.communeService = communeService;
     }
 
@@ -44,14 +43,6 @@ public class CommuneController {
         return communeService.findById(id);
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<CommuneDTO.Response> create(@RequestBody @Valid CommuneDTO.CreateRequest dto) {
-
-        CommuneDTO.Response created = communeService.create(dto);
-        return ResponseEntity.created(URI.create("/api/communes/" + created.id())).body(created);
-    }
-
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CommuneDTO.Response update(@PathVariable Long id, @RequestBody @Valid CommuneDTO.CreateRequest dto) {
@@ -60,11 +51,9 @@ public class CommuneController {
         return communeService.update(ur);
     }
 
-    @DeleteMapping("/{id}")
+    @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-
-        communeService.delete(id);
-        return ResponseEntity.noContent().build();
+    public CommuneCache setActive(@PathVariable Long id, @RequestBody CommuneDTO.StatusRequest dto) {
+        return communeService.setActive(id, dto.active());
     }
 }

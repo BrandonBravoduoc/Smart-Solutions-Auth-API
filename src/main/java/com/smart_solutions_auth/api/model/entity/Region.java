@@ -29,7 +29,10 @@ public class Region {
 
     @Column(name = "region_name", nullable = false, unique = true)
     private String regionName;
-    
+
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true;
+
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Commune> communes;

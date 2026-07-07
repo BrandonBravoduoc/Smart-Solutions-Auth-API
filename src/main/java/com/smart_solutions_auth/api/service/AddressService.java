@@ -14,8 +14,11 @@ import com.smart_solutions_auth.api.model.cache.CommuneCache;
 import com.smart_solutions_auth.api.model.cache.RegionCache;
 import com.smart_solutions_auth.api.model.entity.Address;
 import com.smart_solutions_auth.api.model.entity.Commune;
+import com.smart_solutions_auth.api.model.entity.UserContact;
 import com.smart_solutions_auth.api.repository.AddressRepository;
 import com.smart_solutions_auth.api.repository.CommuneRepository;
+import com.smart_solutions_auth.api.repository.UserContactRepository;
+import com.smart_solutions_auth.api.util.Validations;
 
 import jakarta.transaction.Transactional;
 
@@ -28,6 +31,12 @@ public class AddressService {
 
 	@Autowired
 	private  CommuneRepository communeRepository;
+
+	@Autowired
+	private UserContactRepository userContactRepository;
+
+	@Autowired
+	private Validations validations;
 
 
 
@@ -91,6 +100,8 @@ public class AddressService {
 
 	@CacheEvict(value = {"addresses"}, allEntries = true)
 	public void delete(Long id) {
+		List<UserContact> associated = userContactRepository.findByUserAddressId(id);
+		validations.assertNoUsersAssociated(associated, "sucursal");
 
 		addressRepository.deleteById(id);
 	}
@@ -101,13 +112,15 @@ public class AddressService {
             RegionCache regionCache = null;
             if (a.getCommune().getRegion() != null) {
                 regionCache = new RegionCache(
-					a.getCommune().getRegion().getId(), 
-					a.getCommune().getRegion().getRegionName());
+					a.getCommune().getRegion().getId(),
+					a.getCommune().getRegion().getRegionName(),
+					a.getCommune().getRegion().isActive());
             }
             communeCache = new CommuneCache(
-				a.getCommune().getId(), 
-				a.getCommune().getCommuneName(), 
-				regionCache);
+				a.getCommune().getId(),
+				a.getCommune().getCommuneName(),
+				regionCache,
+				a.getCommune().isActive());
         }
         
         return new AddressCache(

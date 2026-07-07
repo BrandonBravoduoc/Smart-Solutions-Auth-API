@@ -42,7 +42,13 @@ public class CommuneDTO {
 		@JsonProperty("id") Long id,
 		@JsonProperty("communeName") String communeName,
 		@JsonProperty("regionId") Long regionId,
-		@JsonProperty("regionName") String regionName
+		@JsonProperty("regionName") String regionName,
+		@JsonProperty("active") boolean active
+	){}
+
+	@Schema(name = "CommuneStatusRequest")
+	public record StatusRequest(
+		boolean active
 	){}
 
 }
