@@ -20,13 +20,6 @@ public class CoreApiClient {
         this.restClient = RestClient.builder().baseUrl(coreApiBaseUrl).build();
     }
 
-    /**
-     * Le pregunta a Core API si el usuario tiene una suscripción con estado ACTIVE.
-     * Core API confía en las cabeceras X-User-Id/X-User-Role (ya no hay Gateway que las inyecte),
-     * así que aquí se setean directamente para esta llamada servidor-a-servidor.
-     * Si Core API no está disponible, se asume que no hay suscripción activa en vez de
-     * romper la operación de desactivación completa.
-     */
     public boolean hasActiveSubscription(Long userId) {
         try {
             Map<String, Object> body = restClient.get()

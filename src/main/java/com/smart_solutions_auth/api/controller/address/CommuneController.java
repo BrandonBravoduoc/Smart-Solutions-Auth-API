@@ -16,10 +16,6 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.smart_solutions_auth.api.model.cache.CommuneCache;
 
-/**
- * Las comunas se precargan (DataInitializer); no se crean ni se eliminan por API.
- * El administrador solo puede editar el nombre/región o activar/desactivar.
- */
 @RestController
 @RequestMapping("/api/v1/communes")
 public class CommuneController {

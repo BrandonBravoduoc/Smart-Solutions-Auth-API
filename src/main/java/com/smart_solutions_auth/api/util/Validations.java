@@ -113,12 +113,6 @@ public class Validations {
             .orElseThrow(() -> new RuntimeException("Dirección no encontrada."));
     }
 
-    /**
-     * Bloquea la desactivación/eliminación de una región, comuna o sucursal si hay algún
-     * usuario asociado a ella a través de sus datos de contacto (dirección). Si alguno de
-     * esos usuarios tiene además una suscripción activa (consultada en Core API), el mensaje
-     * lo indica explícitamente.
-     */
     public void assertNoUsersAssociated(List<UserContact> associatedContacts, String entityLabel) {
         if (associatedContacts.isEmpty()) {
             return;

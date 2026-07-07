@@ -50,8 +50,6 @@ public class UserDTO {
         String role
     ){}
 
-    //-------------------------------------------------------------------------------------------------------
-
     public record ChangePasswordRequest(
 
         @NotBlank(message = "La contraseña actual es obligatoria.")
@@ -70,9 +68,6 @@ public class UserDTO {
         String email
     ){}
 
-
-    //-------------------------------------------------------------------------------------------------------
-
     public record UpdateEmailRequest(
         @NotBlank(message = "El email es obligatorio.")
         @Size(max = 100, message = "El correo no puede superar los 100 caracteres.")
@@ -90,8 +85,6 @@ public class UserDTO {
         String email,
         String message
     ){}
-
-    //-------------------------------------------------------------------------------------------------------
 
     public record UpdateUserByAdmin(
         String currentEmail,
@@ -112,9 +105,6 @@ public class UserDTO {
         Long addressId
     ){}
 
-
-    //-------------------------------------------------------------------------------------------------------
-    
     public record DeactivateRequest(
         @NotBlank(message = "La contraseña es obligatoria para desactivar la cuenta.")
         String password

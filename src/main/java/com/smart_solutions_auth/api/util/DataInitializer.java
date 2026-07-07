@@ -1,7 +1,5 @@
 package com.smart_solutions_auth.api.util;
 
-
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,8 +34,6 @@ public class DataInitializer implements CommandLineRunner {
     private final CommuneRepository communeRepository;
     private final AddressRepository addressRepository;
 
-    // Regiones y comunas ya no se crean por API (solo se activan/desactivan),
-    // así que se precargan aquí con un set representativo para poder probar el sistema.
     private static final Map<String, String[]> REGIONS_AND_COMMUNES = new LinkedHashMap<>();
     static {
         REGIONS_AND_COMMUNES.put("Región Metropolitana", new String[] {
@@ -51,10 +47,6 @@ public class DataInitializer implements CommandLineRunner {
         });
     }
 
-    // Una sucursal de ejemplo por comuna: {sucursalName, street, number}.
-    // Las direcciones tampoco se crean masivamente por API (el admin solo agrega/edita
-    // sucursales puntuales), así que se precarga al menos una por comuna para poder
-    // probar el registro de usuarios en cualquier comuna, no solo en "cerrillos".
     private static final Map<String, String[]> SAMPLE_ADDRESSES = new LinkedHashMap<>();
     static {
         SAMPLE_ADDRESSES.put("cerrillos", new String[] { "Plaza Oeste", "Colo Colo", "921" });
@@ -82,7 +74,7 @@ public class DataInitializer implements CommandLineRunner {
 
             User adminUser = new User();
             adminUser.setEmail("admin@smart.com");
-            adminUser.setPassword(passwordEncoder.encode("Admin.1234$"));
+            adminUser.setPassword(passwordEncoder.encode("Admin123$"));
             adminUser.setUserRole(adminRole);
             adminUser.setAsset(true);
 
@@ -101,12 +93,6 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    /**
-     * Precarga regiones y comunas si la tabla está vacía, y además garantiza que
-     * cada comuna tenga al menos una sucursal (rellena las que falten en cada arranque,
-     * por si quedaron comunas sin sucursal de una corrida anterior). Devuelve la
-     * sucursal de "cerrillos" (o la primera disponible) para el admin sembrado.
-     */
     private Address seedRegionsCommunesAndAddresses() {
         if (regionRepository.count() == 0) {
             for (Map.Entry<String, String[]> entry : REGIONS_AND_COMMUNES.entrySet()) {

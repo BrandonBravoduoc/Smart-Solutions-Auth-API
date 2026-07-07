@@ -14,10 +14,6 @@ import com.smart_solutions_auth.api.service.RegionService;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-/**
- * Las regiones se precargan (DataInitializer); no se crean ni se eliminan por API.
- * El administrador solo puede editar el nombre o activar/desactivar.
- */
 @RestController
 @RequestMapping("/api/v1/regions")
 public class RegionController {
