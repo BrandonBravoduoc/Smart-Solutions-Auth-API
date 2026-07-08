@@ -3,6 +3,7 @@ package com.smart_solutions_auth.api.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseCookie;
@@ -45,6 +46,12 @@ public class UserService {
     @Autowired
     private JwtService jwtService;
 
+    @Value("${cookie.secure:true}")
+    private boolean cookieSecure;
+
+    @Value("${cookie.same-site:None}")
+    private String cookieSameSite;
+
     public UserDTO.Response userRegister(UserDTO.RegisterRequest dto, HttpServletResponse response) {
 
         String cleanEmail = validations.emailValidate(dto.email());
@@ -79,18 +86,18 @@ public class UserService {
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(3600)
-                .sameSite("None")
+                .sameSite(cookieSameSite)
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(cookieSecure)
                 .path("/api/v1/auth/refresh")
                 .maxAge(604800)
-                .sameSite("None")
+                .sameSite(cookieSameSite)
                 .build();
 
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, accessCookie.toString());
@@ -146,10 +153,10 @@ public class UserService {
         String newToken = jwtService.generateToken(user);
         ResponseCookie cookie = ResponseCookie.from("accessToken", newToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(3600)
-                .sameSite("Strict")
+                .sameSite(cookieSameSite)
                 .build();
 
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
@@ -160,18 +167,18 @@ public class UserService {
     public void logout(HttpServletResponse response) {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(0)
-                .sameSite("None")
+                .sameSite(cookieSameSite)
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(cookieSecure)
                 .path("/api/v1/auth/refresh")
                 .maxAge(0)
-                .sameSite("None")
+                .sameSite(cookieSameSite)
                 .build();
 
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, accessCookie.toString());
@@ -191,10 +198,10 @@ public class UserService {
 
         ResponseCookie deleteCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite(cookieSameSite)
                 .build();
 
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, deleteCookie.toString());

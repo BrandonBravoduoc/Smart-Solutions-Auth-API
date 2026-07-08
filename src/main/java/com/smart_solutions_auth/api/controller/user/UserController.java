@@ -45,7 +45,7 @@ public class UserController {
     
     @PatchMapping("/profile/update")
     public ResponseEntity<UserContactDTO.Response> updateContact(
-            @RequestBody UserContactDTO.UpdateRequest requestDto
+            @Valid @RequestBody UserContactDTO.UpdateRequest requestDto
     ) {
         UserContactDTO.Response updatedContact = userContactService.updateUserContact(requestDto);
         

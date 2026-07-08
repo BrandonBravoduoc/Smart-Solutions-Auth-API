@@ -32,6 +32,9 @@ public class Commune {
     @Column(name = "commune_name", nullable = false, unique = true)
     private String communeName;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true;
+
     @OneToMany(mappedBy = "street")
     @JsonIgnore
     private List<Address> userAddress;

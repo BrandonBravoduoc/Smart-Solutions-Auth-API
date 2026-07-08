@@ -17,6 +17,8 @@ import com.smart_solutions_auth.api.dto.address.AddressDTO;
 import com.smart_solutions_auth.api.model.cache.AddressCache;
 import com.smart_solutions_auth.api.service.AddressService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/v1/addresses")
@@ -41,15 +43,15 @@ public class AddressController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<AddressDTO.Response> create(@RequestBody AddressDTO.CreateRequest dto) {
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CLIENTE')")
+    public ResponseEntity<AddressDTO.Response> create(@Valid @RequestBody AddressDTO.CreateRequest dto) {
         AddressDTO.Response created = addressService.create(dto);
         return ResponseEntity.status(201).body(created);
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public AddressDTO.Response update(@PathVariable Long id, @RequestBody AddressDTO.CreateRequest dto) {
+    public AddressDTO.Response update(@PathVariable Long id, @Valid @RequestBody AddressDTO.CreateRequest dto) {
         AddressDTO.UpdateRequest ur = new AddressDTO.UpdateRequest(
             id, 
             dto.sucursalName(),

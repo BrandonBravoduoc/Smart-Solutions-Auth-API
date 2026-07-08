@@ -3,6 +3,7 @@ package com.smart_solutions_auth.api.service;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -31,26 +32,32 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${cookie.secure:true}")
+    private boolean cookieSecure;
+
+    @Value("${cookie.same-site:None}")
+    private String cookieSameSite;
+
     public AuthDTO.Response Login(AuthDTO.LoginRequest dto, HttpServletResponse response) {
         User user = validations.validateCredentials(dto.email(), dto.password());
-        
+
         String token = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", token)
                 .httpOnly(true)
-                .secure(true) 
+                .secure(cookieSecure)
                 .path("/")
-                .maxAge(3600) 
-                .sameSite("None")
+                .maxAge(3600)
+                .sameSite(cookieSameSite)
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true)
-                .path("/api/v1/auth/refresh") 
-                .maxAge(604800) 
-                .sameSite("None")
+                .secure(cookieSecure)
+                .path("/api/v1/auth/refresh")
+                .maxAge(604800)
+                .sameSite(cookieSameSite)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
@@ -77,10 +84,10 @@ public class AuthService {
         String newAccessToken = jwtService.generateToken(user);
         ResponseCookie cookie = ResponseCookie.from("accessToken", newAccessToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(3600)
-                .sameSite("None")
+                .sameSite(cookieSameSite)
                 .build();
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
     }

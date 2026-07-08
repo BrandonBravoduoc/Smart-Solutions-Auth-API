@@ -5,7 +5,8 @@ import java.io.Serializable;
 public record CommuneCache(
     Long id,
     String communeName,
-    RegionCache region
+    RegionCache region,
+    boolean active
 ) implements Serializable{
     private static final long serialVersionUID = 1L;
 }

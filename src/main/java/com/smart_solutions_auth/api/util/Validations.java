@@ -1,14 +1,18 @@
 package com.smart_solutions_auth.api.util;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.smart_solutions_auth.api.client.CoreApiClient;
 import com.smart_solutions_auth.api.model.entity.Address;
 import com.smart_solutions_auth.api.model.entity.Commune;
 import com.smart_solutions_auth.api.model.entity.Region;
 import com.smart_solutions_auth.api.model.entity.User;
+import com.smart_solutions_auth.api.model.entity.UserContact;
 import com.smart_solutions_auth.api.model.entity.UserRole;
 import com.smart_solutions_auth.api.repository.AddressRepository;
 import com.smart_solutions_auth.api.repository.CommuneRepository;
@@ -42,6 +46,9 @@ public class Validations {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private CoreApiClient coreApiClient;
 
     public String emailValidate(String email) {
         if(userRepository.existsByEmail(email)){
@@ -106,7 +113,17 @@ public class Validations {
             .orElseThrow(() -> new RuntimeException("Dirección no encontrada."));
     }
 
+    public void assertNoUsersAssociated(List<UserContact> associatedContacts, String entityLabel) {
+        if (associatedContacts.isEmpty()) {
+            return;
+        }
 
-    
-    
+        boolean anyActiveSubscription = associatedContacts.stream()
+            .anyMatch(contact -> coreApiClient.hasActiveSubscription(contact.getUser().getId()));
+
+        String suffix = anyActiveSubscription ? " con una suscripción activa" : "";
+        throw new RuntimeException(
+            "No se puede desactivar esta " + entityLabel + " porque está asociada a un usuario" + suffix + ".");
+    }
+
 }

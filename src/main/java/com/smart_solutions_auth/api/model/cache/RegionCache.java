@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 public record RegionCache (
     Long id,
-    String nameRegion
+    String nameRegion,
+    boolean active
 )implements Serializable{
     private static final long serialVersionUID = 1l;
 }
