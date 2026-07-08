@@ -10,7 +10,7 @@ public class RegionDTO {
 	@Schema(name = "RegionCreateRequest")
 	public record CreateRequest(
 		@NotBlank(message = "El nombre de la región es obligatorio")
-		@Size(min = 2, max = 100, message = "El nombre de la región debe tener entre 2 y 100 caracteres.")
+		@Size(min = 10, max = 100, message = "El nombre de la región debe tener entre 10 y 100 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9]{1,}$", message = "El nombre de la región contiene caracteres inválidos.")
 		String regionName
 	){}
@@ -19,7 +19,7 @@ public class RegionDTO {
 	public record UpdateRequest(
 		Long id,
 		@NotBlank(message = "El nombre de la región es obligatorio")
-		@Size(min = 2, max = 100, message = "El nombre de la región debe tener entre 2 y 100 caracteres.")
+		@Size(min = 10, max = 100, message = "El nombre de la región debe tener entre 10 y 100 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9]{1,}$", message = "El nombre de la región contiene caracteres inválidos.")
 		String regionName
 	){}

@@ -13,7 +13,7 @@ public class CommuneDTO {
 	public record CreateRequest(
 		@JsonProperty("communeName")
 		@NotBlank(message = "El nombre de la comuna es obligatorio")
-		@Size(min = 2, max = 100, message = "El nombre de la comuna debe tener entre 2 y 100 caracteres.")
+		@Size(min = 10, max = 100, message = "El nombre de la comuna debe tener entre 10 y 100 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9]{1,}$", message = "El nombre de la comuna contiene caracteres inválidos.")
 		String communeName,
 
@@ -28,7 +28,7 @@ public class CommuneDTO {
 
 		@JsonProperty("communeName")
 		@NotBlank(message = "El nombre de la comuna es obligatorio")
-		@Size(min = 2, max = 100, message = "El nombre de la comuna debe tener entre 2 y 100 caracteres.")
+		@Size(min = 10, max = 100, message = "El nombre de la comuna debe tener entre 10 y 100 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9]{1,}$", message = "El nombre de la comuna contiene caracteres inválidos.")
 		String communeName,
 

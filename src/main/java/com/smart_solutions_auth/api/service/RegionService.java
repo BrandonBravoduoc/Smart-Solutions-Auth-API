@@ -51,7 +51,7 @@ public class RegionService {
 			r.isActive());
 	}
 
-	@CacheEvict(value = {"regions"}, allEntries = true)
+	@CacheEvict(value = {"regions", "communes", "addresses"}, allEntries = true)
 	public RegionDTO.Response update(RegionDTO.UpdateRequest dto) {
 		Region region = validations.requireRegion(dto.id());
 		region.setRegionName(dto.regionName());

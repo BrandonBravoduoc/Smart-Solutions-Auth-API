@@ -47,7 +47,7 @@ public class CommuneService {
         return mapToCache(c);
     }
 
-	@CacheEvict(value = {"communes"}, allEntries = true)
+	@CacheEvict(value = {"communes", "addresses"}, allEntries = true)
 	public CommuneDTO.Response update(CommuneDTO.UpdateRequest dto) {
 		Commune commune = validations.requireCommune(dto.id());
 
