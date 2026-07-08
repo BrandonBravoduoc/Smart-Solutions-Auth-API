@@ -11,13 +11,13 @@ public class AddressDTO {
 	@Schema(name = "AddressCreateRequest")
 	public record CreateRequest(
 		@NotBlank(message = "El nombre de la sucursal es obligatoria.")
-		@Size(min = 10, max = 50, message = "El nombre de la sucursal debe tener entre 10 y 50 caracteres.")
+		@Size(min = 3, max = 50, message = "El nombre de la sucursal debe tener entre 3 y 50 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9]{1,}$", message = "El nombre de la sucursal contiene caracteres inválidos.")
 		String sucursalName,
 
 
 		@NotBlank(message = "La calle es obligatoria.")
-		@Size(min = 10, max = 150, message = "La calle debe tener entre 10 y 150 caracteres.")
+		@Size(min = 3, max = 150, message = "La calle debe tener entre 3 y 150 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9.\\-]{1,}$", message = "La calle contiene caracteres inválidos.")
 		String street,
 
@@ -35,12 +35,12 @@ public class AddressDTO {
 		Long id,
 
 		@NotBlank(message = "El nombre de la sucursal es obligatoria.")
-		@Size(min = 10, max = 50, message = "El nombre de la sucursal debe tener entre 10 y 50 caracteres.")
+		@Size(min = 3, max = 50, message = "El nombre de la sucursal debe tener entre 3 y 50 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9]{1,}$", message = "El nombre de la sucursal contiene caracteres inválidos.")
 		String sucursalName,
 
 		@NotBlank(message = "La calle es obligatoria")
-		@Size(min = 10, max = 150, message = "La calle debe tener entre 10 y 150 caracteres.")
+		@Size(min = 3, max = 150, message = "La calle debe tener entre 3 y 150 caracteres.")
 		@Pattern(regexp = "^[a-zA-ZáéíóúñÁÉÍÓÚÑ\\s0-9.\\-]{1,}$", message = "La calle contiene caracteres inválidos.")
 		String street,
 
