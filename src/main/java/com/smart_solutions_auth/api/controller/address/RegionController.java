@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.smart_solutions_auth.api.dto.address.RegionDTO;
 import com.smart_solutions_auth.api.service.RegionService;
 
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
@@ -38,7 +39,7 @@ public class RegionController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public RegionDTO.Response update(@PathVariable Long id, @RequestBody RegionDTO.CreateRequest dto) {
+    public RegionDTO.Response update(@PathVariable Long id, @Valid @RequestBody RegionDTO.CreateRequest dto) {
         RegionDTO.UpdateRequest ur = new RegionDTO.UpdateRequest(id, dto.regionName());
         return regionService.update(ur);
     }
